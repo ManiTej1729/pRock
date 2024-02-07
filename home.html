@@ -7,12 +7,10 @@
     <title>Photo-slideshow App</title>
     <style>
         body {
-            /* background-color: #333; */
             background-image: url('2.jpg');
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-           
         }
 
         .container {
@@ -41,16 +39,15 @@
         }
 
         .option {
-            /* background-color: #fff; */
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
+            cursor: pointer; /* Cursor changes to pointer on hover */
         }
 
         .option:hover {
             transform: translateY(-5px);
-            /* color: #4CAF50; */
         }
 
         .option img {
@@ -70,6 +67,7 @@
             padding: 20px;
             background-color: black;
             border-radius: 20px;
+            color: #3498db;
         }
 
         .option:hover p {
@@ -82,8 +80,8 @@
     <div class="container">
         <h1 class="header">Welcome to pRock</h1>
         <div class="options">
-            <div class="option">
-                <p style="color: #3498db;">Upload Images</p>
+            <div class="option" onclick="window.location.href='login.html';">
+                <p>Sign In</p>
             </div>
         </div>
     </div>
