@@ -1,0 +1,49 @@
+body {
+  background-color: #cdcdcd; /* Light grey */
+}
+#drop-area {
+  border: 2px solid #000;
+  border-radius: 20px;
+  width: 80%;
+  margin: 10vh auto;
+  padding: 20px;
+  text-align: center;
+}
+
+.my-form p {
+  margin: 10px 0;
+}
+
+.button {
+  display: inline-block;
+  padding: 10px;
+  background: #ccc;
+  cursor: pointer;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.button:hover {
+  background: #ddd;
+}
+
+#gallery {
+  margin-top: 20px;
+}
+
+#gallery img {
+  max-width: 100px; /* Adjust the max width as needed */
+  max-height: 100px; /* Adjust the max height to maintain aspect ratio */
+  margin-top: 10px;
+  margin-right: 10px;
+  vertical-align: middle;
+  width: auto; /* Maintain aspect ratio */
+  height: auto; /* Maintain aspect ratio */
+}
+#file-list {
+  list-style-position: inside; /* Align bullets with text */
+  padding-left: 0; /* Remove default padding */
+  text-align: center; /* Center the text */
+  margin: 0 auto; /* Center the list if it has a defined width */
+  width: 80%; /* Optional: Adjust the width as needed */
+}
