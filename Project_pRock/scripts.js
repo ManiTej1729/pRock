@@ -151,5 +151,5 @@ function handleConfirmSelection() {
 
 function handlePreview() {
     // Navigate to the preview page
-    window.location.href = 'preview.html'; // Replace 'preview.html' with the URL of your preview page
+    window.location.href = 'video.html'; // Replace 'preview.html' with the URL of your preview page
 }
