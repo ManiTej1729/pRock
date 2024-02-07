@@ -1,1 +1,15 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/M9yOg1uw)
+# Lab - 3
+## Flask 
+### find
+My find function will find the data (username, email and password) of the user by its user name.
+In other words we can do /user/\<username\> to get the details
+```python
+    def find(user_id):
+    with open('users.txt', 'r') as file:
+        for line in file:
+            stri = json.loads(line)
+            if stri["name"] == user_id:
+                return line
+    return "User doesn't exists"
+```
+Rest everything is obvious.
