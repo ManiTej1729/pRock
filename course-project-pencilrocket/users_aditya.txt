@@ -1,0 +1,3 @@
+{"id": 1, "name": "VED PRAKASH MAURYA", "email": "8@gmail.com", "password": "2d02dfba39b7b8a49242c466baf09005ae30ea9a5c0c0509e4aa7c25a59dff54"}
+{"id": 2, "name": "adithya", "email": "adithya.addepalli@students.iiit.ac.in", "password": "43f6341c2ed1590c6e232d3d4a5c751e07ddf62b2b70d134c1278293f1f38fd0"}
+{"id": 3, "name": "", "email": "", "password": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
