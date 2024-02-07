@@ -84,21 +84,7 @@ function uploadFile(file) {
   simulateUploadProgress(file);
 }
 
-function simulateUploadProgress(file) {
-  let progress = 0;
-  const interval = setInterval(() => {
-    progress += 10;
-    console.log(`${file.name}: ${progress}%`);
-    if (progress >= 100) {
-      clearInterval(interval);
-      if (Math.random() < 0.1) {
-        console.error(`${file.name} failed to upload.`);
-      } else {
-        console.log(`${file.name} uploaded successfully.`);
-      }
-    }
-  }, 200);
-}
+
 function addCheckbox(file) {
   let photoSelectionDiv = document.getElementById('photo-selection');
   if (!photoSelectionDiv) {
