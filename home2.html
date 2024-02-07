@@ -7,7 +7,7 @@
     <title>Welcome to pRock</title>
     <style>
         body {
-            background-image: url('pngtree-pile-of-social-media-emoji-network-emoticon-background-image_985727');
+            background-image: url('images.png');
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
@@ -19,13 +19,13 @@
             align-items: center;
             justify-content: center;
             height: 100vh;
-            color: #fff;
+    
         }
 
         .header {
             text-align: center;
             margin-bottom: 20px;
-            color: #3498db;
+            color:blueviolet;
         }
 
         .options {
@@ -36,7 +36,7 @@
             margin-top: 20px;
         }
 
-        .option {
+        .options {
             background-color: rgba(0, 0, 0, 0.5);
             padding: 20px;
             border-radius: 10px;
@@ -45,18 +45,19 @@
             cursor: pointer;
         }
 
-        .option:hover {
+        .options:hover {
             transform: translateY(-5px);
         }
 
-        .option p {
+        .options p {
             margin: 0;
             font-size: 16px;
             font-weight: bold;
             text-align: center;
+            color:aliceblue
         }
 
-        .option img {
+        .options img {
             width: 100px;
             height: 100px;
             object-fit: cover;
@@ -68,27 +69,13 @@
 
 <body>
     <div class="container">
-        <?php
-            // Assuming the username is passed via URL parameter
-            if(isset($_GET['username'])) {
-                $username = $_GET['username'];
-                echo "<h1 class='header'>Welcome to pRock, $username!</h1>";
-            } else {
-                echo "<h1 class='header'>Welcome to pRock!</h1>";
-            }
-        ?>
+    
+                <h1 style="font-size: 400%;" class='header'>Welcome to pRock</h1>
+          
         <div class="options">
-            <div class="option" onclick="window.location.href='upload_images.html';">
-                <img src="upload-icon.png" alt="Upload Icon">
+            <div class="option" onclick="window.location.href='index.html';">
+                <img src="Untitled.png" alt="Upload Icon">
                 <p>Upload Images</p>
-            </div>
-            <div class="option" onclick="window.location.href='upload_videos.html';">
-                <img src="upload-video-icon.png" alt="Upload Video Icon">
-                <p>Upload Videos</p>
-            </div>
-            <div class="option">
-                <img src="enjoy-icon.png" alt="Enjoy Icon">
-                <p>Enjoy</p>
             </div>
         </div>
     </div>
