@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
   let dropArea = document.getElementById('drop-area');
   let confirmButton = document.getElementById('confirm-selection-button');
   confirmButton.addEventListener('click', function() {
-      handleConfirmSelection(); // Removed the unnecessary parameter here
+      handleConfirmSelection();
   });
 
   ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -23,9 +23,8 @@ document.addEventListener('DOMContentLoaded', function() {
   
 });
 function handleMusic(files) {
-      let musicFile = files[0]; // Assume only one file is selected
+      let musicFile = files[0]; 
       console.log('Selected music file:', musicFile);
-      // You can handle the selected music file here (e.g., store it in memory or display its name)
   }
 
 function preventDefaults(e) {
@@ -69,7 +68,7 @@ function previewFile(file) {
 }
 
 function displayFileName(file) {
-  let fileList = document.getElementById('file-list'); // Ensure this element exists in your HTML
+  let fileList = document.getElementById('file-list');
   let listItem = document.createElement('li');
   listItem.textContent = file.name;
   fileList.appendChild(listItem);
@@ -77,12 +76,10 @@ function displayFileName(file) {
 
 
 function uploadFile(file) {
-  // Simulate an upload process
-  const url = 'your-upload-endpoint'; // Placeholder URL
+  const url = 'your-upload-endpoint';
   const formData = new FormData();
   formData.append('file', file);
 
-  // Simulate progress and success/error handling
   console.log(`Uploading ${file.name}...`);
   simulateUploadProgress(file);
 }
@@ -94,13 +91,10 @@ function simulateUploadProgress(file) {
     console.log(`${file.name}: ${progress}%`);
     if (progress >= 100) {
       clearInterval(interval);
-      // Simulate a successful upload with a 10% chance of failure
       if (Math.random() < 0.1) {
         console.error(`${file.name} failed to upload.`);
-        // Handle the error, e.g., show an error message to the user
       } else {
         console.log(`${file.name} uploaded successfully.`);
-        // Handle the success, e.g., update the UI to reflect the upload status
       }
     }
   }, 200);
@@ -116,10 +110,10 @@ function addCheckbox(file) {
   let checkbox = document.createElement('input');
   checkbox.type = 'checkbox';
   checkbox.value = file.name;
-  checkbox.id = `checkbox-${file.name}`; // Use file name as the unique identifier
+  checkbox.id = `checkbox-${file.name}`;
 
   let label = document.createElement('label');
-  label.htmlFor = `checkbox-${file.name}`; // Match label to checkbox
+  label.htmlFor = `checkbox-${file.name}`;
   label.textContent = file.name;
 
   let br = document.createElement('br');
@@ -130,26 +124,24 @@ function addCheckbox(file) {
 }
 
 function handleConfirmSelection() {
-  // Check if the 'Preview' button already exists
   let existingPreviewButton = document.getElementById('preview-button');
   if (!existingPreviewButton) {
       let previewButton = document.createElement('button');
-      previewButton.id = 'preview-button'; // Assign an ID to the button for easy reference
+      previewButton.id = 'preview-button';
       previewButton.textContent = 'Preview';
       previewButton.addEventListener('click', handlePreview);
 
-      let breakLine = document.createElement('br'); // Create a line break
-      let breakLine2 = document.createElement('br'); // Create a line break
+      let breakLine = document.createElement('br');
+      let breakLine2 = document.createElement('br');
 
       let buttonParent = document.getElementById('confirm-selection-button').parentNode;
-      buttonParent.appendChild(breakLine); // Append the line break to the parent container
-      buttonParent.appendChild(breakLine2); // Append the line break to the parent container
-      buttonParent.appendChild(previewButton); // Append the 'Preview' button after the line break
+      buttonParent.appendChild(breakLine);
+      buttonParent.appendChild(breakLine2);
+      buttonParent.appendChild(previewButton);
   }
 }
 
 
 function handlePreview() {
-  // Navigate to the preview page
-  window.location.href = 'video.html'; // Replace 'preview.html' with the URL of your preview page
+  window.location.href = 'video.html';
 }
