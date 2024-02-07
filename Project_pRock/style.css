@@ -1,5 +1,5 @@
 body {
-    background-color: #cdcdcd; /* Light grey */
+    background-color: #cdcdcd;
 }
 #drop-area {
     border: 2px solid #000;
@@ -32,18 +32,18 @@ body {
   }
   
   #gallery img {
-    max-width: 100px; /* Adjust the max width as needed */
-    max-height: 100px; /* Adjust the max height to maintain aspect ratio */
+    max-width: 100px;
+    max-height: 100px;
     margin-top: 10px;
     margin-right: 10px;
     vertical-align: middle;
-    width: auto; /* Maintain aspect ratio */
-    height: auto; /* Maintain aspect ratio */
+    width: auto;
+    height: auto;
 }
 #file-list {
-    list-style-position: inside; /* Align bullets with text */
-    padding-left: 0; /* Remove default padding */
-    text-align: center; /* Center the text */
-    margin: 0 auto; /* Center the list if it has a defined width */
-    width: 80%; /* Optional: Adjust the width as needed */
+    list-style-position: inside;
+    padding-left: 0;
+    text-align: center;
+    margin: 0 auto;
+    width: 80%;
 }
