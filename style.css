@@ -1,0 +1,37 @@
+#drop-area {
+    border: 2px dashed #ccc;
+    border-radius: 20px;
+    width: 80%;
+    margin: 10vh auto;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .my-form p {
+    margin: 10px 0;
+  }
+  
+  .button {
+    display: inline-block;
+    padding: 10px;
+    background: #ccc;
+    cursor: pointer;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .button:hover {
+    background: #ddd;
+  }
+  
+  #gallery {
+    margin-top: 20px;
+  }
+  
+  #gallery img {
+    width: 100px;
+    margin-top: 10px;
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+  
