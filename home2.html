@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to pRock</title>
+    <style>
+        body {
+            background-image: url('pngtree-pile-of-social-media-emoji-network-emoticon-background-image_985727');
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: #fff;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #3498db;
+        }
+
+        .options {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .option {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .option:hover {
+            transform: translateY(-5px);
+        }
+
+        .option p {
+            margin: 0;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .option img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <?php
+            // Assuming the username is passed via URL parameter
+            if(isset($_GET['username'])) {
+                $username = $_GET['username'];
+                echo "<h1 class='header'>Welcome to pRock, $username!</h1>";
+            } else {
+                echo "<h1 class='header'>Welcome to pRock!</h1>";
+            }
+        ?>
+        <div class="options">
+            <div class="option" onclick="window.location.href='upload_images.html';">
+                <img src="upload-icon.png" alt="Upload Icon">
+                <p>Upload Images</p>
+            </div>
+            <div class="option" onclick="window.location.href='upload_videos.html';">
+                <img src="upload-video-icon.png" alt="Upload Video Icon">
+                <p>Upload Videos</p>
+            </div>
+            <div class="option">
+                <img src="enjoy-icon.png" alt="Enjoy Icon">
+                <p>Enjoy</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
