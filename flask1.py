@@ -56,7 +56,6 @@ def add(typer):
         with open('users.txt', 'a+') as file:
             json.dump(user_data, file)
             file.write("\n")
-        print(name, email, password)
         cmd = "INSERT INTO users (username, email, password) VALUES (%s, %s, %s)"
         cur.execute(cmd, (name, email, password))
         mydb.commit()
@@ -73,8 +72,6 @@ def add(typer):
                 stri = json.loads(line)
                 if stri["email"] == email:
                     temp = stri["password"]
-                    print(password.encode('utf-8'))
-                    print(temp.encode('utf-8'))
                     if bcrypt.checkpw(password.encode('utf-8'), temp.encode('utf-8')):
                         return redirect(url_for('newHome'))
             return render_template("login.html", err="Incorrect username / password", new=typer)
@@ -92,6 +89,15 @@ def find(user_id):
             if stri["name"] == user_id:
                 return jsonify(stri)
     return "User doesn't exists"
+
+@app.route('/users', methods = ['POST', 'GET'])
+def display():
+    with open('users.txt') as file:
+        LIST = []
+        for line in file:
+            lineTemp = json.loads(line)
+            LIST.append(lineTemp)
+        return jsonify(LIST)
         
 if __name__ == "__main__":  
     app.run(debug=True)
