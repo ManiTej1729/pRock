@@ -1,9 +1,23 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 import bcrypt
 import json
-
+import pymysql
+import pymysql.cursors
 
 app = Flask(__name__)
+
+mydb = pymysql.connect(
+    host = "localhost",
+    user = "root",
+    password = "M@ni1234",
+    database = "media_database"
+)
+
+if(mydb.open): 
+    print("Connected")
+    cur = mydb.cursor()
+else:
+    print("Falied to connect")
 
 salt = bcrypt.gensalt()
 def hash_password(password):
@@ -24,7 +38,6 @@ def video():
 
 @app.route('/next/<typer>', methods=['POST', 'GET'])
 def add(typer):
-    # print(typer)
     if request.method == 'POST' and typer == 'signin':
         name = request.form.get('name')
         email = request.form.get('email')
@@ -43,6 +56,10 @@ def add(typer):
         with open('users.txt', 'a+') as file:
             json.dump(user_data, file)
             file.write("\n")
+        print(name, email, password)
+        cmd = "INSERT INTO users (username, email, password) VALUES (%s, %s, %s)"
+        cur.execute(cmd, (name, email, password))
+        mydb.commit()
         return redirect(url_for('newHome'))
     elif request.method == 'POST' and typer == 'login':
         email = request.form.get('email')
@@ -73,8 +90,12 @@ def find(user_id):
         for line in file:
             stri = json.loads(line)
             if stri["name"] == user_id:
-                return line
+                return jsonify(stri)
     return "User doesn't exists"
         
 if __name__ == "__main__":  
     app.run(debug=True)
+    
+mydb.commit()
+cur.close()
+mydb.close()
