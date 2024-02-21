@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Registration</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <style>
+        body {
+  font-family: 'Poppins', sans-serif;
+  background: #4a4a4a;
+  color: #fff;
+  margin: 0;
+}
+
+h1 {
+  text-align: center;
+  font-size: 2.5em;
+  margin-top: 30px;
+  color: #3498db;
+}
+
+form {
+  max-width: 400px;
+  margin: 0 auto;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+input {
+  width: 100%;
+  padding: 15px;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+  border: none;
+  border-bottom: 2px solid #3498db;
+  background-color: rgba(255, 255, 255, 0.7);
+  color: #333;
+  font-size: 1em;
+  outline: none;
+  transition: border-bottom-color 0.3s ease-in-out;
+}
+
+input[type="password"] {
+  letter-spacing: 2px;
+}
+
+input:focus {
+  border-bottom-color: #3498db;
+}
+
+input[type="submit"] {
+  background-color: #3498db;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  padding: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+input[type="submit"]:hover {
+  background-color: #2980b9;
+}
+
+.message {
+  text-align: center;
+  color: #ecf0f1;
+  font-size: 0.9em;
+}
+
+.message a {
+  color: #3498db;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.message a:hover {
+  text-decoration: underline;
+  color: #2980b9;
+}
+
+    </style>
+</head>
+<body>
+    <br>
+    <h1 align="center">Hey Welcome to pRock</h1>
+    <form  method="post" action="/next">
+        <br>
+        <input type="text" name="name" placeholder="Username">
+        <br>
+        <input type="text" name="email" placeholder="Email">
+        <br>
+        <input type="password" name="password" placeholder="Password">
+        <br><br>
+        <input type="submit" value="Log in">
+    </form>
+</body>
+
+</html>

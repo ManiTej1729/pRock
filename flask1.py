@@ -2,10 +2,11 @@ from flask import Flask, render_template, request, redirect, url_for
 import bcrypt
 import json
 
+
 app = Flask(__name__)
 
+salt = bcrypt.gensalt()
 def hash_password(password):
-    salt = bcrypt.gensalt()
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
     return hashed_password.decode('utf-8')
 
@@ -21,25 +22,51 @@ def phin():
 def video():
     return render_template("video.html")
 
-@app.route('/next', methods=['POST', 'GET'])
-def add():
-    if request.method == 'POST':
+@app.route('/next/<typer>', methods=['POST', 'GET'])
+def add(typer):
+    # print(typer)
+    if request.method == 'POST' and typer == 'signin':
         name = request.form.get('name')
         email = request.form.get('email')
         password = request.form.get('password')
         password = hash_password(password)
-        print(password) 
         user_data = {
             "name": name,
             "email": email,
             "password": password
         }
+        with open('users.txt', 'r') as file:
+            for line in file:
+                tempLine = json.loads(line)
+                if tempLine['email'] == email:
+                    return render_template("login.html", err="User already exists", new=typer)
         with open('users.txt', 'a+') as file:
             json.dump(user_data, file)
             file.write("\n")
-        return render_template("home2.html", name=name)
-    return render_template("login.html")
+        return redirect(url_for('newHome'))
+    elif request.method == 'POST' and typer == 'login':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        user_data = {
+            "email": email,
+            "password": password
+        }
+        with open('users.txt', 'r') as file:
+            for line in file:
+                stri = json.loads(line)
+                if stri["email"] == email:
+                    temp = stri["password"]
+                    print(password.encode('utf-8'))
+                    print(temp.encode('utf-8'))
+                    if bcrypt.checkpw(password.encode('utf-8'), temp.encode('utf-8')):
+                        return redirect(url_for('newHome'))
+            return render_template("login.html", err="Incorrect username / password", new=typer)
+    return render_template("login.html", new=typer)
     
+@app.route('/home2', methods=['POST', 'GET'])
+def newHome():
+    return render_template('home2.html')
+
 @app.route('/user/<user_id>', methods=['GET'])
 def find(user_id):
     with open('users.txt', 'r') as file:
