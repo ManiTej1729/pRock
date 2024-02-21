@@ -41,6 +41,6 @@ def search_media():
     search_results = search_audio(keyword)
     return jsonify(search_results)
 
-if __name__ == '__main__':``
+if __name__ == '__main__':
     populate_audio_library()
     app.run(debug=True)
