@@ -47,22 +47,24 @@ def video():
     payload = jwt.decode(token, "!@#$%", algorithms=['HS256'])
     files = request.files.getlist('image')
     print(files)
-    uname = session['user_details']
+    uname = session['user_details']['username']
     print(uname)
-    query = 'SELECT id FROM users WHERE username = "%s"'
+    query = 'SELECT id FROM users WHERE username = %s'
     cur.execute(query, uname)
     fId = cur.fetchone()
-
+    print("fid: ", fId)
     if fId:
         for img in files:
             print(img)
             filename = img.filename
             filesize = img.content_length
             fileblob = img.read()
-            query = 'INSERT INTO uploaded_images (user_id, image_name, fsize, bindata) VALUES (%d, %s, %f, %s)'
-            cur.execute(query, (fId, filename, filesize, fileblob))
+            fidin = int(fId[0])
+            print(type(fidin))
+            query = f'INSERT INTO uploaded_images (user_id, image_name, fsize, bindata) VALUES ({fidin}, "{filename}", {filesize}, %s)'
+            cur.execute(query, (fileblob))
             mydb.commit()
-        print(fId, filename)
+            print(fId, filename)
     return render_template("video.html")
 
 @app.route('/next/<typer>', methods=['POST', 'GET'])
