@@ -25,7 +25,7 @@
 
     <button onclick="processVideo()">Process Video</button>
 
-    <video width="1300px" height="auto" style="margin-left: -680px;margin-top: 50px;" controls class="video" id="vid">
+    <video width="1300px" height="auto" style="margin-left: -660px;margin-top: 0px;" controls class="video" id="vid">
         <source src="../static/1.mp4" type="video/mp4" id="vide">
         Your browser does not support the video tag.
     </video>
@@ -41,7 +41,6 @@
             const videoUrl = constructVideoUrl(selectedResolution, selectedQuality);
             document.getElementById('vide').src = videoUrl;
             document.getElementById('vid').load();
-
         }
     </script>
 </body>

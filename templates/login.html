@@ -86,16 +86,23 @@ input[type="submit"]:hover {
 <body>
     <br>
     <h1 align="center">Hey Welcome to pRock</h1>
-    <form  method="post" action="/next">
+    <form  method="post" action="/next/{{ new }}">
         <br>
-        <input type="text" name="name" placeholder="Username">
+        {% if new == "signin" %}
+        <input type="text" name="name" placeholder="Username" required>
         <br>
-        <input type="text" name="email" placeholder="Email">
+        {% endif %}
+        <input type="text" name="email" placeholder="Email" required>
         <br>
-        <input type="password" name="password" placeholder="Password">
+        <input type="password" name="password" placeholder="Password" required>
         <br><br>
-        <input type="submit" value="Log in">
+        {% if new == "signin" %}
+        <input type="submit" value="Sign In">
+        {% endif %}
+        {% if new != "signin" %}
+        <input type="submit" value="Log In">
+        {% endif %}
+        <div style="color: red; text-align: center;">{{ err }}</div>
     </form>
 </body>
-
 </html>

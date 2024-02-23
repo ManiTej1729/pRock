@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>test</title>
+    <style>
+        .parentInput {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 50px;
+            border: 1px dotted black;
+            /* padding-left: -25%; */
+            /* left: -25%; */
+            width: 75%;
+            margin: auto;
+            top: 25vh;
+            /* font-size: 0; */
+        }
+        .button {
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <form action="/upload" method="post">
+        <div class="parentInput">
+            <!-- <label for="imgs">Choose files</label> -->
+            <input type="file" multiple id="imgs">
+            <!-- <br><br> -->
+            <!-- <input type="submit" name="" id=""> -->
+        </div>
+        <br>
+        <div class="button">
+            <input type="submit" value="Upload">
+        </div>
+    </form>
+</body>
+</html>
