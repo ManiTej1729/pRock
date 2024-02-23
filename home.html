@@ -7,7 +7,8 @@
     <title>Photo-slideshow App</title>
     <style>
         body {
-            background-image: url('2.jpg');
+            background-image: url('21.jpg');
+            background-size: cover;
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
@@ -36,7 +37,6 @@
             justify-content: space-around;
             width: 80%;
             margin-bottom: 20px;
-            /* background-color: #000; */
         }
 
         .option {
@@ -47,7 +47,7 @@
             cursor: pointer; /* Cursor changes to pointer on hover */
         }
 
-        .options:hover {
+        .option:hover {
             transform: translateY(-5px);
         }
 
@@ -81,10 +81,12 @@
     <div class="container">
         <h1 class="header">Welcome to pRock</h1>
         <div class="options">
-            
-           <a href="http://127.0.0.1:5000" style="text-decoration: none; color: #3498db; border: 20px solid black; border-radius: 20px; background-color: black;">Sign In</a>
-                <!-- <p>Sign In</p> -->
-            
+            <a class="option" href="/next/login">
+                <p>Log In</p>
+            </a>
+            <a class="option" href="/next/signin">
+                <p>Sign in</p>
+            </a>
         </div>
     </div>
 </body>
