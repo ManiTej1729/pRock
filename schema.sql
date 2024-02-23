@@ -6,20 +6,15 @@ CREATE TABLE users (
 );
 
 CREATE TABLE uploaded_images (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
+
     image_name VARCHAR(100) NOT NULL,
-    image_description TEXT,
-    image_path VARCHAR(255) NOT NULL,
-    upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    id INT,
+    FOREIGN KEY (id) REFERENCES users(id)
 );
+
 CREATE TABLE audio_library (
     id INT AUTO_INCREMENT PRIMARY KEY,
     audio_name VARCHAR(100) NOT NULL,
-    audio_artist VARCHAR(100),
-    audio_genre VARCHAR(50),
-    audio_path VARCHAR(255) NOT NULL,
     upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
