@@ -52,6 +52,7 @@ def video():
     query = 'SELECT id FROM users WHERE username = "%s"'
     cur.execute(query, uname)
     fId = cur.fetchone()
+
     if fId:
         for img in files:
             print(img)
@@ -103,9 +104,15 @@ def add(typer):
         # return render_template()
         return redirect(url_for('newHome'))
     elif request.method == 'POST' and typer == 'login':
-        name = request.form.get('name')
+        print("neucwvui")
+        # name = request.form.get('name')
         email = request.form.get('email')
         password = request.form.get('password')
+        query = 'SELECT username FROM users WHERE email = %s'
+
+        cur.execute(query, email)
+        name = cur.fetchone()
+        print("name :", name[0])
         user_data = {
             "email": email,
             "password": password
@@ -119,12 +126,12 @@ def add(typer):
                         secret_key = '!@#$%'
                         payload = {
                             # 'user_id': 1,
-                            'username': name,
+                            'username': name[0],
                             'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)  # Token expiration time
                         }
                         token = jwt.encode(payload, secret_key, algorithm='HS256')
                         session['jwt_token'] = token
-                        session['user_details'] = {'username': name}
+                        session['user_details'] = {'username': name[0]}
                         print(session)
                         return redirect(url_for('newHome'))
             return render_template("login.html", err="Incorrect username / password", new=typer)
