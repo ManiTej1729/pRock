@@ -12,9 +12,12 @@ CREATE TABLE uploaded_images (
     FOREIGN KEY (id) REFERENCES users(id)
 );
 
-CREATE TABLE audio_library (
+CREATE TABLE uploaded_images (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    audio_name VARCHAR(100) NOT NULL,
-    upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    user_id INT,
+    image_name VARCHAR(100) NOT NULL,
+    image_description TEXT,
+    image_path VARCHAR(255) NOT NULL,
+    upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
-
