@@ -114,6 +114,8 @@ def add(typer):
 
         cur.execute(query, email)
         name = cur.fetchone()
+        if name == None:
+            return render_template("login.html", err="User not", new=typer)
         print("name :", name[0])
         user_data = {
             "email": email,
