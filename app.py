@@ -98,7 +98,7 @@ def add(typer):
             # 'user_id': 1,
             'username': name,
             'password': password,
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)  # Token expiration time
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)
         }
         token = jwt.encode(payload, secret_key, algorithm='HS256')
         session['jwt_token'] = token
