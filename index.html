@@ -59,7 +59,7 @@
 <body>
     <div id="drop-area">
         <form class="my-form" action="/video" method="post" enctype="multipart/form-data">
-            <p>Upload multiple files with the file dialog or by dragging and dropping images onto the solid boundary</p>
+            <p>Upload multiple files with the file dialog or by dragging and dropping images onto the soli  d boundary</p>
             <input type="file" id="fileElem" multiple accept="image/*" onchange="handleFiles(this.files)" name = "image">
             <input type="submit">
         </form>
@@ -76,7 +76,6 @@
         <button id="confirm-selection-button" onclick="handleConfirmSelection()">Confirm Selection</button><br><br>
         <button id="preview-button" style="display: none;" onclick="handlePreview()">Preview</button>
     </div>
-    
     <script >
       
 document.addEventListener('DOMContentLoaded', function() {
@@ -105,7 +104,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function handleMusic(files) {
     let musicFile = files[0]; 
-    console.log('Selected music file:', musicFile);
+    // console.log('Selected music file:', musicFile);
+    console.log('Selected music file:', files);
 }
 
 function preventDefaults(e) {
@@ -132,7 +132,7 @@ function handleFiles(files) {
         previewFile(file);
         displayFileName(file);
         addCheckbox(file);
-        uploadFile(file);
+        uploadFile(file);   
     });
 }
 
@@ -154,7 +154,7 @@ function displayFileName(file) {
 }
 
 function uploadImage() {
-    const fileInput = document.getElementById('fileInput');
+    const fileInput = document.getElementById('fileElem');
     const file = fileInput.files[0];
     const formData = new FormData();
     formData.append('file', file);
@@ -193,6 +193,7 @@ function addCheckbox(file) {
 function handleConfirmSelection() {
     let previewButton = document.getElementById('preview-button')
     previewButton.style.display = 'block'
+    // uploadImage()
 }
 
 function handlePreview() {
