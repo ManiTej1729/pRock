@@ -2,96 +2,96 @@
 <html lang="en">
 <head>
     <title>Photo-Slideshow App</title>
-    <!-- <link rel="stylesheet" href="style.css">////// -->
     <style>
-        @media screen {
-            body{
-            background-color: rosybrown;
-            font-family: Arial, sans-serif;
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #2980b9, #6dd5fa, #ffffff);
+            color: #fff;
             margin: 0;
             padding: 0;
-        } 
-        body {
-    background-color: #cdcdcd;
-}                                                                                                               
-#drop-area {
-    border: 2px solid #000;
-    border-radius: 20px;
-    width: 80%;
-    margin: 10vh auto;
-    padding: 20px;
-    text-align: center;
-  }
-  
-  .my-form p {
-    margin: 10px 0;
-  }
-  
-  .button {
-    display: inline-block;
-    padding: 10px;
-    background: #ccc;
-    cursor: pointer;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-  }
-  
-  .button:hover {
-    background: #ddd;
-  }
-  
-  #gallery {
-    margin-top: 20px;
-  }
-  
-  #gallery img {
-    max-width: 100px;
-    max-height: 100px;
-    margin-top: 10px;
-    margin-right: 10px;
-    vertical-align: middle;
-    width: auto;
-    height: auto;
-}
-#file-list {
-    list-style-position: inside;
-    padding-left: 0;
-    text-align: center;
-    margin: 0 auto;
-    width: 80%; 
-}
+            background-attachment: fixed;
+        }
 
+        #drop-area {
+            border: 2px solid #000;
+            border-radius: 20px;
+            width: 80%;
+            margin: 10vh auto;
+            padding: 20px;
+            text-align: center;
+            border: 2px double solid blanchedalmond;
+        }
+
+        .my-form p {
+            margin: 10px 0;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px;
+            background: #ccc;
+            cursor: pointer;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .button:hover {
+            background: #ddd;
+        }
+
+        #gallery {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        #gallery img {
+            max-width: 100px;
+            max-height: 100px;
+            margin: 5px;
+            border-radius: 5px;
+        }
+
+        #file-list {
+            list-style-position: inside;
+            padding-left: 0;
+            text-align: center;
+            margin: 0 auto;
+            width: 80%;
+        }
     </style>
 </head>
 <body>
     <div id="drop-area">
         <form class="my-form" action="/video" method="post" enctype="multipart/form-data">
-            <p>Upload multiple files with the file dialog or by dragging and dropping images onto the soli  d boundary</p>
-            <input type="file" id="fileElem" multiple accept="image/*" onchange="handleFiles(this.files)" name = "image">
+            <p>Upload multiple files with the file dialog or by dragging and dropping images onto the solid boundary</p>
+            <input type="file" id="fileElem" multiple accept="image/*" onchange="handleFiles(this.files)" name="image">
             <input type="submit">
         </form>
         <h3>Uploaded Files</h3>
         <ul id="file-list"></ul>
         <div id="gallery"></div>
     </div>
-    <h3>Select Photos for Video</h3>
-    <div id="photo-selection"></div>
-    <h3>Add Background Music</h3>
-    <input type="radio" id="musicFile1"onchange="handleMusic(this.value)" name="bgm" value="Chaleya">
-    <label for="musicFile1">Chaleya</label><br>
-    <input type="radio" id="musicFile2"onchange="handleMusic(this.value)" name="bgm" value="Heeriye">
-    <label for="musicFile">Heeriye</label><br>
-    <input type="radio" id="musicFile3"onchange="handleMusic(this.value)" name="bgm" value="Happy Birthday To You Ji">
-    <label for="musicFile">Happy Birthday To You Ji</label><br>
-    <input type="radio" id="musicFile4"onchange="handleMusic(this.value)" name="bgm" value="INDUSTRY-BABY">
-    <label for="musicFile">INDUSTRY-BABY</label><br>
-    <br><br>
-    <div>
+    <div align="center">
+        <h3>Select Photos for Video</h3>
+        <div id="photo-selection"></div>
+        <h3>Add Background Music</h3>
+        <input type="radio" id="musicFile1" onchange="handleMusic(this.value)" name="bgm" value="Chaleya">
+        <label for="musicFile1">Chaleya</label><br>
+        <input type="radio" id="musicFile2" onchange="handleMusic(this.value)" name="bgm" value="Heeriye">
+        <label for="musicFile2">Heeriye</label><br>
+        <input type="radio" id="musicFile3" onchange="handleMusic(this.value)" name="bgm" value="Happy Birthday To You Ji">
+        <label for="musicFile3">Happy Birthday To You Ji</label><br>
+        <input type="radio" id="musicFile4" onchange="handleMusic(this.value)" name="bgm" value="INDUSTRY-BABY">
+        <label for="musicFile4">INDUSTRY-BABY</label><br>
+        <br><br>
+    </div>
+    <div align="center">
         <button id="confirm-selection-button" onclick="handleConfirmSelection()">Confirm Selection</button><br><br>
         <button id="preview-button" style="display: none;" onclick="handlePreview()">Preview</button>
     </div>
-    <script >
-      
+    <script>
 document.addEventListener('DOMContentLoaded', function() {
 
     let dropArea = document.getElementById('drop-area');
@@ -137,68 +137,56 @@ function handleDrop(e) {
 }
 
 function handleFiles(files) {
-    ([...files]).forEach(file => {
+    const gallery = document.getElementById('gallery');
+    gallery.innerHTML = ''; // Clear previous images
+
+    Array.from(files).forEach(file => {
         previewFile(file);
         displayFileName(file);
         addCheckbox(file);
-        uploadFile(file);   
+        uploadFile(file);
     });
 }
 
 function previewFile(file) {
-    let reader = new FileReader();
+    const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = function() {
-        let img = document.createElement('img');
+        const img = document.createElement('img');
         img.src = reader.result;
-        document.getElementById('gallery').appendChild(img);
+        img.className = 'preview-image'; // Add a class for styling
+        gallery.appendChild(img);
     };
 }
 
-function uploadImage() {
-    const fileInput = document.getElementById('fileElem');
-    const file = fileInput.files[0];
-    const formData = new FormData();
-    formData.append('file', file);
-
-    fetch('/upload', {
-        method: 'POST',
-        body: formData,
-    });
-}
-
 function displayFileName(file) {
-    let fileList = document.getElementById('file-list');
-    let listItem = document.createElement('li');
+    const fileList = document.getElementById('file-list');
+    const listItem = document.createElement('li');
     listItem.textContent = file.name;
     fileList.appendChild(listItem);
 }
 
-function handleMusic(files) {
-    let musicFile = files[0]; 
-    // console.log('Selected music file:', musicFile);
-    console.log('Selected music file:', files);
+function uploadFile(file) {
+    // Implement file upload logic here
+}
+
+function handleMusic(value) {
+    console.log('Selected music file:', value);
 }
 
 function addCheckbox(file) {
-    let photoSelectionDiv = document.getElementById('photo-selection');
+    const photoSelectionDiv = document.getElementById('photo-selection');
 
-    // if (!photoSelectionDiv) {
-    //     photoSelectionDiv = document.createElement('div');
-    //     photoSelectionDiv.id = 'photo-selection';
-    //     document.getElementById('drop-area').appendChild(photoSelectionDiv);
-    // }
-
-    let checkbox = document.createElement('input');
+    const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.value = file.name;
     checkbox.id = `checkbox-${file.name}`;
 
-    let label = document.createElement('label');
+    const label = document.createElement('label');
     label.htmlFor = `checkbox-${file.name}`;
     label.textContent = file.name;
 
-    let br = document.createElement('br');
+    const br = document.createElement('br');
 
     photoSelectionDiv.appendChild(checkbox);
     photoSelectionDiv.appendChild(label);
@@ -206,33 +194,13 @@ function addCheckbox(file) {
 }
 
 function handleConfirmSelection() {
-    let previewButton = document.getElementById('preview-button')
-    previewButton.style.display = 'block'
-    // uploadImage()
+    const previewButton = document.getElementById('preview-button');
+    previewButton.style.display = 'block';
 }
 
 function handlePreview() {
     window.location.href = 'http://127.0.0.1:5500/Project_pRock/templates/video.html';
 }
-
-// function handleConfirmSelection() {
-//     let existingPreviewButton = document.getElementById('preview-button');
-//     if (!existingPreviewButton) {
-//         let previewButton = document.createElement('button');
-//         previewButton.id = 'preview-button';
-//         previewButton.textContent = 'Preview';
-//         previewButton.addEventListener('click', handlePreview);
-
-//         let breakLine = document.createElement('br');
-//         let breakLine2 = document.createElement('br');
-
-//         let buttonParent = document.getElementById('confirm-selection-button').parentNode;
-//         buttonParent.appendChild(breakLine);
-//         buttonParent.appendChild(breakLine2);
-//         buttonParent.appendChild(previewButton);
-//     }
-// }
-
     </script>
 </body>
 </html>
