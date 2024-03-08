@@ -8,26 +8,22 @@ import jwt
 
 app = Flask(__name__)
 app.secret_key = "this_is_worlds_most_secured_secret_key"
-
 mydb = pymysql.connect(
     host = "localhost",
     user = "root",
     password = "Vedp9565@",
     database = "media_database"
 )
-
 if(mydb.open): 
     print("Connected")
     cur = mydb.cursor()
     cur.execute("use media_database")
 else:
     print("Falied to connect")
-
 salt = bcrypt.gensalt()
 def hash_password(password):
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
     return hashed_password.decode('utf-8')
-
 @app.route('/', methods=['POST','GET'])
 def index():
     return render_template("home.html")
@@ -44,7 +40,7 @@ def video():
     token = session.get('jwt_token')
     if not token:
         return redirect(url_for('index'))
-    payload = jwt.decode(token, "!@#$%", algorithms=['HS256'])
+    # payload = jwt.decode(token, "!@#$%", algorithms=['HS256'])
     files = request.files.getlist('image')
     print(files)
     uname = session['user_details']['username']
@@ -57,15 +53,18 @@ def video():
         for img in files:
             print(img)
             filename = img.filename
-            filesize = img.content_length
+            # with open(f"{filename}", 'rb') as img:
             fileblob = img.read()
+            filesize = len(fileblob)
             fidin = int(fId[0])
-            print(type(fidin))
+            print("file size: ", filesize)
+            print("Bin data: ", fileblob)
             query = f'INSERT INTO uploaded_images (user_id, image_name, fsize, bindata) VALUES ({fidin}, "{filename}", {filesize}, %s)'
             cur.execute(query, (fileblob))
             mydb.commit()
             print(fId, filename)
-    return render_template("video.html")
+    # return render_template("index.html")
+    return redirect(url_for('phin'))
 
 @app.route('/next/<typer>', methods=['POST', 'GET'])
 def add(typer):
@@ -77,6 +76,10 @@ def add(typer):
         email = request.form.get('email')
         password = request.form.get('password')
         password = hash_password(password)
+        if name == 'Admin':
+            return render_template("login.html", err="Please choose a different username", new=typer)
+        if email == 'admin@iiit.ac.in':
+            return render_template("login.html", err="Please choose a different email", new=typer)
         user_data = {
             "name": name,
             "email": email,
@@ -103,7 +106,6 @@ def add(typer):
         cmd = "INSERT INTO users (username, email, password) VALUES (%s, %s, %s)"
         cur.execute(cmd, (name, email, password))
         mydb.commit()
-        # return render_template()
         return redirect(url_for('newHome'))
     elif request.method == 'POST' and typer == 'login':
         print("neucwvui")
@@ -115,7 +117,7 @@ def add(typer):
         cur.execute(query, email)
         name = cur.fetchone()
         if name == None:
-            return render_template("login.html", err="User not", new=typer)
+            return render_template("login.html", err="User not found", new=typer)
         print("name :", name[0])
         user_data = {
             "email": email,
@@ -165,6 +167,10 @@ def display():
     token = session.get('jwt_token')
     if not token:
         return redirect(url_for('index'))
+    print(session['user_details']['username'])
+    uname = session['user_details']['username'];
+    if uname != 'Admin':
+        return redirect(url_for('newHome'))
     # cur.execute('SELECT * FROM users')
     # user = cur.fetchall()
     with open('users.txt') as file:
@@ -174,7 +180,7 @@ def display():
             LIST.append(lineTemp)
         return jsonify(LIST)
     # return render_template('display.html', user=user)
-
+    
 # @app.route('/upload', methods=['POST'])
 # def upload_file():
 #     token = session.get('jwt_token')
@@ -189,16 +195,20 @@ def display():
 #     cur.execute(sql, (filename, binary_data))
 #     mydb.commit()
 #     return ''
-
+    
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
     session.pop('jwt_token', None)
     session.pop('user_details', None)
     return redirect(url_for('index'))
-        
+
+@app.route('/slideshow', methods = ['GET', 'POST'])
+def show():
+    return render_template('video.html')
+
 if __name__ == "__main__":  
     app.run(debug=True)
-    
+
 mydb.commit()
 cur.close()
 mydb.close()
