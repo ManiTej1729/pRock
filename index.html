@@ -70,7 +70,14 @@
     <h3>Select Photos for Video</h3>
     <div id="photo-selection"></div>
     <h3>Add Background Music</h3>
-    <input type="file" id="musicFile" accept="audio/*" onchange="handleMusic(this.files)" name="bgm">
+    <input type="radio" id="musicFile1"onchange="handleMusic(this.value)" name="bgm" value="Chaleya">
+    <label for="musicFile1">Chaleya</label><br>
+    <input type="radio" id="musicFile2"onchange="handleMusic(this.value)" name="bgm" value="Heeriye">
+    <label for="musicFile">Heeriye</label><br>
+    <input type="radio" id="musicFile3"onchange="handleMusic(this.value)" name="bgm" value="Happy Birthday To You Ji">
+    <label for="musicFile">Happy Birthday To You Ji</label><br>
+    <input type="radio" id="musicFile4"onchange="handleMusic(this.value)" name="bgm" value="INDUSTRY-BABY">
+    <label for="musicFile">INDUSTRY-BABY</label><br>
     <br><br>
     <div>
         <button id="confirm-selection-button" onclick="handleConfirmSelection()">Confirm Selection</button><br><br>
@@ -102,11 +109,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
-function handleMusic(files) {
-    let musicFile = files[0]; 
-    // console.log('Selected music file:', musicFile);
-    console.log('Selected music file:', files);
-}
 
 function preventDefaults(e) {
     e.preventDefault();
@@ -146,13 +148,6 @@ function previewFile(file) {
     };
 }
 
-function displayFileName(file) {
-    let fileList = document.getElementById('file-list');
-    let listItem = document.createElement('li');
-    listItem.textContent = file.name;
-    fileList.appendChild(listItem);
-}
-
 function uploadImage() {
     const fileInput = document.getElementById('fileElem');
     const file = fileInput.files[0];
@@ -163,6 +158,19 @@ function uploadImage() {
         method: 'POST',
         body: formData,
     });
+}
+
+function displayFileName(file) {
+    let fileList = document.getElementById('file-list');
+    let listItem = document.createElement('li');
+    listItem.textContent = file.name;
+    fileList.appendChild(listItem);
+}
+
+function handleMusic(files) {
+    let musicFile = files[0]; 
+    // console.log('Selected music file:', musicFile);
+    console.log('Selected music file:', files);
 }
 
 function addCheckbox(file) {
@@ -197,7 +205,7 @@ function handleConfirmSelection() {
 }
 
 function handlePreview() {
-    window.location.href = 'video';
+    window.location.href = 'http://127.0.0.1:5500/Project_pRock/templates/video.html';
 }
 
 // function handleConfirmSelection() {
