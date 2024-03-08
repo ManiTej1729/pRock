@@ -1,8 +1,9 @@
-from flask import Flask, request, jsonify
+import os
+import mutagen
 import pymysql
-import pymysql.cursors
-
-app = Flask(__name__)
+from mutagen.mp3 import MP3
+from mutagen.oggvorbis import OggVorbis
+from mutagen.flac import FLAC
 
 mydb = pymysql.connect(
     host="localhost",
@@ -10,20 +11,38 @@ mydb = pymysql.connect(
     password="Vedp9565@",
     database="media_database"
 )
+
 cursor = mydb.cursor()
+
+def get_song_metadata(audio_path):
+    audio = mutagen.File(audio_path)
+    if audio is None:
+        return None, None
+    if isinstance(audio, MP3):
+        duration = int(audio.info.length)
+    elif isinstance(audio, OggVorbis):
+        duration = int(audio.info.length)
+    elif isinstance(audio, FLAC):
+        duration = int(audio.info.length)
+    else:
+        duration = None
+    size = os.path.getsize(audio_path)
+    return size, duration
+
 def populate_audio_library():
     audio_files = [
-        ("1", "Song 1", "Artist 1", "Pop", "Chaleya_320(PagalWorld.com.cm).mp3"),
-        ("2", "Song 2", "Artist 2", "Rock", "Heeriye_320(PagalWorld.com.cm).mp3"),
-        ("3", "Song 3", "Artist 3", "hind", "Ram Siya Ram_320(PagalWorld.com.cm).mp3"),
-        ("4", "Song 4", "Artist 4", "englis", "INDUSTRY-BABY---Lil-Nas-X-N-Jack-Harlow(PagalWorlld.Com).mp3"),
-        ("5", "Song 5", "Artist 5", "Rock", "Happy Birthday To You Ji(PagalWorld.com.cm).mp3"),  
-        ("6", "Song 6", "Artist 6", "Rock", "Moye-Moye(PaglaSongs).mp3"),  
+        ("Chaleya_320(PagalWorld.com.cm).mp3", "Chaleya"),
+        ("Heeriye_320(PagalWorld.com.cm).mp3", "Heeriye"),
+        ("Happy Birthday To You Ji(PagalWorld.com.cm).mp3", "Happy Birthday To You Ji"),
+        ("INDUSTRY-BABY---Lil-Nas-X-N-Jack-Harlow(PagalWorlld.Com).mp3", "Industry Baby"),
     ]
-    sql = "INSERT INTO audio_library (id,audio_name, audio_artist, audio_genre, audio_path) VALUES (%s, %s, %s, %s, %s)"
-    cursor.executemany(sql, audio_files)
+    for audio_file, audio_name in audio_files:
+        size, duration = get_song_metadata(audio_file)
+        if size is not None and duration is not None:
+            with open(audio_file, 'rb') as f:
+                bindata = f.read()
+            sql = "INSERT INTO audio_library (audio_name, duration, fszie, bindata) VALUES (%s, %s, %s, %s)"
+            cursor.execute(sql, (audio_name, duration, size, bindata))
     mydb.commit()
-    
+
 populate_audio_library()
-if __name__ == '__main__':
-    app.run(debug=True)
