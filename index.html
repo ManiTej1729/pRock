@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <title>Photo-Slideshow App</title>
-    <!-- <link rel="stylesheet" href="style.css"> -->
+    <!-- <link rel="stylesheet" href="style.css">////// -->
     <style>
         body {
     background-color: #cdcdcd;
@@ -69,150 +69,154 @@
     </div>
     <h3>Select Photos for Video</h3>
     <div id="photo-selection"></div>
-        
     <h3>Add Background Music</h3>
     <input type="file" id="musicFile" accept="audio/*" onchange="handleMusic(this.files)" name="bgm">
     <br><br>
     <div>
-        <button id="confirm-selection-button">Confirm Selection</button>
+        <button id="confirm-selection-button" onclick="handleConfirmSelection()">Confirm Selection</button><br><br>
+        <button id="preview-button" style="display: none;" onclick="handlePreview()">Preview</button>
     </div>
     
     <script >
       
 document.addEventListener('DOMContentLoaded', function() {
 
-let dropArea = document.getElementById('drop-area');
-let confirmButton = document.getElementById('confirm-selection-button');
-confirmButton.addEventListener('click', function() {
-    handleConfirmSelection();
+    let dropArea = document.getElementById('drop-area');
+    let confirmButton = document.getElementById('confirm-selection-button');
+    confirmButton.addEventListener('click', function() {
+        handleConfirmSelection();
+    });
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, preventDefaults, false);
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropArea.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, unhighlight, false);
+    });
+
+    dropArea.addEventListener('drop', handleDrop, false);
+
 });
 
-['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-    dropArea.addEventListener(eventName, preventDefaults, false);
-});
-
-['dragenter', 'dragover'].forEach(eventName => {
-    dropArea.addEventListener(eventName, highlight, false);
-});
-
-['dragleave', 'drop'].forEach(eventName => {
-    dropArea.addEventListener(eventName, unhighlight, false);
-});
-
-dropArea.addEventListener('drop', handleDrop, false);
-
-});
 function handleMusic(files) {
     let musicFile = files[0]; 
     console.log('Selected music file:', musicFile);
 }
 
 function preventDefaults(e) {
-e.preventDefault();
-e.stopPropagation();
+    e.preventDefault();
+    e.stopPropagation();
 }
 
 function highlight(e) {
-dropArea.classList.add('highlight');
+    dropArea.classList.add('highlight');
 }
 
 function unhighlight(e) {
-dropArea.classList.remove('highlight');
+    dropArea.classList.remove('highlight');
 }
 
 function handleDrop(e) {
-let dt = e.dataTransfer;
-let files = dt.files;
-
-handleFiles(files);
+    let dt = e.dataTransfer;
+    let files = dt.files;
+    handleFiles(files);
 }
 
 function handleFiles(files) {
-([...files]).forEach(file => {
-    previewFile(file);
-    displayFileName(file);
-    addCheckbox(file);
-    uploadFile(file);
-});
-
+    ([...files]).forEach(file => {
+        previewFile(file);
+        displayFileName(file);
+        addCheckbox(file);
+        uploadFile(file);
+    });
 }
 
 function previewFile(file) {
-let reader = new FileReader();
-reader.readAsDataURL(file);
-reader.onloadend = function() {
-    let img = document.createElement('img');
-    img.src = reader.result;
-    document.getElementById('gallery').appendChild(img);
-};
+    let reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = function() {
+        let img = document.createElement('img');
+        img.src = reader.result;
+        document.getElementById('gallery').appendChild(img);
+    };
 }
 
 function displayFileName(file) {
-let fileList = document.getElementById('file-list');
-let listItem = document.createElement('li');
-listItem.textContent = file.name;
-fileList.appendChild(listItem);
+    let fileList = document.getElementById('file-list');
+    let listItem = document.createElement('li');
+    listItem.textContent = file.name;
+    fileList.appendChild(listItem);
 }
 
 function uploadImage() {
-const fileInput = document.getElementById('fileInput');
-const file = fileInput.files[0];
-const formData = new FormData();
-formData.append('file', file);
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+    const formData = new FormData();
+    formData.append('file', file);
 
-fetch('/upload', {
-  method: 'POST',
-  body: formData,
-});
+    fetch('/upload', {
+        method: 'POST',
+        body: formData,
+    });
 }
-
 
 function addCheckbox(file) {
-let photoSelectionDiv = document.getElementById('photo-selection');
-if (!photoSelectionDiv) {
-    photoSelectionDiv = document.createElement('div');
-    photoSelectionDiv.id = 'photo-selection';
-    document.getElementById('drop-area').appendChild(photoSelectionDiv);
-}
+    let photoSelectionDiv = document.getElementById('photo-selection');
 
-let checkbox = document.createElement('input');
-checkbox.type = 'checkbox';
-checkbox.value = file.name;
-checkbox.id = `checkbox-${file.name}`;
+    // if (!photoSelectionDiv) {
+    //     photoSelectionDiv = document.createElement('div');
+    //     photoSelectionDiv.id = 'photo-selection';
+    //     document.getElementById('drop-area').appendChild(photoSelectionDiv);
+    // }
 
-let label = document.createElement('label');
-label.htmlFor = `checkbox-${file.name}`;
-label.textContent = file.name;
+    let checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.value = file.name;
+    checkbox.id = `checkbox-${file.name}`;
 
-let br = document.createElement('br');
+    let label = document.createElement('label');
+    label.htmlFor = `checkbox-${file.name}`;
+    label.textContent = file.name;
 
-photoSelectionDiv.appendChild(checkbox);
-photoSelectionDiv.appendChild(label);
-photoSelectionDiv.appendChild(br);
+    let br = document.createElement('br');
+
+    photoSelectionDiv.appendChild(checkbox);
+    photoSelectionDiv.appendChild(label);
+    photoSelectionDiv.appendChild(br);
 }
 
 function handleConfirmSelection() {
-let existingPreviewButton = document.getElementById('preview-button');
-if (!existingPreviewButton) {
-    let previewButton = document.createElement('button');
-    previewButton.id = 'preview-button';
-    previewButton.textContent = 'Preview';
-    previewButton.addEventListener('click', handlePreview);
-
-    let breakLine = document.createElement('br');
-    let breakLine2 = document.createElement('br');
-
-    let buttonParent = document.getElementById('confirm-selection-button').parentNode;
-    buttonParent.appendChild(breakLine);
-    buttonParent.appendChild(breakLine2);
-    buttonParent.appendChild(previewButton);
+    let previewButton = document.getElementById('preview-button')
+    previewButton.style.display = 'block'
 }
-}
-
 
 function handlePreview() {
-window.location.href = 'video';
+    window.location.href = 'video';
 }
+
+// function handleConfirmSelection() {
+//     let existingPreviewButton = document.getElementById('preview-button');
+//     if (!existingPreviewButton) {
+//         let previewButton = document.createElement('button');
+//         previewButton.id = 'preview-button';
+//         previewButton.textContent = 'Preview';
+//         previewButton.addEventListener('click', handlePreview);
+
+//         let breakLine = document.createElement('br');
+//         let breakLine2 = document.createElement('br');
+
+//         let buttonParent = document.getElementById('confirm-selection-button').parentNode;
+//         buttonParent.appendChild(breakLine);
+//         buttonParent.appendChild(breakLine2);
+//         buttonParent.appendChild(previewButton);
+//     }
+// }
+
     </script>
 </body>
 </html>
