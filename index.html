@@ -142,9 +142,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
-// document.getElementById('myForm').addEventListener('submit', function(event) {
-//     event.preventDefault();
-// })
+document.getElementById('myForm').addEventListener('submit', function() {
+    createJSON();
+})
+
+
 
 function preventDefaults(e) {
     e.preventDefault();
@@ -172,7 +174,6 @@ function save_oldfiles(){
     old_files = document.getElementById("fileElem").files;
     console.log("wndc",old_files)
 }
-
 
 function handleFiles(files) {
     // const gallery = document.getElementById('gallery');
@@ -219,15 +220,11 @@ function displayFileName(file) {
     fileList.appendChild(listItem);
 }
 
-function handleMusic(value) {
-    console.log('Selected music file:', value);
-}
-
 const imgs = [];
 
 function addCheckbox(file) {
     const photoSelectionDiv = document.getElementById('photo-selection');
-
+    
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.value = file.name;
@@ -257,6 +254,48 @@ function handleConfirmSelection() {
     // const previewButton = document.getElementById('preview-tag');
     // previewButton.style.display = 'inline';
 }
-    </script>
+
+var music = ''
+
+function handleMusic(value) {
+    console.log('Selected music file:', value);
+    music = value;
+}
+
+function JS_Object(key, name) {
+    this.key = name;
+}
+
+function createJSON() {
+    const length = imgs.length
+    if (length == 0) {
+        return;
+    }
+    const js_obj = new JS_Object('name1', imgs[0].name)
+    for (let i = 0; i < length; i++) {
+        js_obj['name' + (i + 1)] = imgs[i];
+        // console.log(imgs[i]);
+    }
+    js_obj['bgm'] = music;
+    delete js_obj.key;
+    if (music == '') {
+        return;
+    }
+    fetch('/video', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(js_obj)
+    })
+    .then(response => response.json())
+    .then(data => console.log(data.result))
+    console.log(JSON.stringify(js_obj))
+    console.log(imgs)
+    alert(js_obj);
+}
+
+
+</script>
 </body>
 </html>
