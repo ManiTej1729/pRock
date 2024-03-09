@@ -14,6 +14,7 @@ mydb = pymysql.connect(
     password = "Vedp9565@",
     database = "media_database"
 )
+
 if(mydb.open): 
     print("Connected")
     cur = mydb.cursor()
@@ -24,6 +25,9 @@ salt = bcrypt.gensalt()
 def hash_password(password):
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
     return hashed_password.decode('utf-8')
+
+not_allowed = 0
+
 @app.route('/', methods=['POST','GET'])
 def index():
     return render_template("home.html")
@@ -41,8 +45,11 @@ def video():
     if not token:
         return redirect(url_for('index'))
     # payload = jwt.decode(token, "!@#$%", algorithms=['HS256'])
+    print("entered")
+    js_data = request.json
+    print(js_data)
     files = request.files.getlist('image')
-    print(files)
+    print("number: ", files)
     uname = session['user_details']['username']
     print(uname)
     query = 'SELECT id FROM users WHERE username = %s'
@@ -58,13 +65,14 @@ def video():
             filesize = len(fileblob)
             fidin = int(fId[0])
             print("file size: ", filesize)
-            print("Bin data: ", fileblob)
-            query = f'INSERT INTO uploaded_images (user_id, image_name, fsize, bindata) VALUES ({fidin}, "{filename}", {filesize}, %s)'
-            cur.execute(query, (fileblob))
-            mydb.commit()
-            print(fId, filename)
+            # print("Bin data: ", fileblob)
+            if filesize != 0:
+                query = f'INSERT INTO uploaded_images (user_id, image_name, fsize, bindata) VALUES ({fidin}, "{filename}", {filesize}, %s)'
+                cur.execute(query, (fileblob))
+                mydb.commit()
+                print(fId, filename)
     # return render_template("index.html")
-    return redirect(url_for('phin'))
+    return render_template('video.html')
 
 @app.route('/next/<typer>', methods=['POST', 'GET'])
 def add(typer):
@@ -89,6 +97,7 @@ def add(typer):
             for line in file:
                 tempLine = json.loads(line)
                 if tempLine['email'] == email:
+                    print(tempLine)
                     return render_template("login.html", err="User already exists", new=typer)
         with open('users.txt', 'a+') as file:
             json.dump(user_data, file)
@@ -98,7 +107,7 @@ def add(typer):
             # 'user_id': 1,
             'username': name,
             'password': password,
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)  # Token expiration time
         }
         token = jwt.encode(payload, secret_key, algorithm='HS256')
         session['jwt_token'] = token
@@ -145,10 +154,19 @@ def add(typer):
     
 @app.route('/home2', methods=['POST', 'GET'])
 def newHome():
+    global not_allowed
     token = session.get('jwt_token')
     if not token:
         return redirect(url_for('index'))
-    return render_template('home2.html')
+    uname = session['user_details']['username']
+    if not_allowed == 1:
+        not_allowed = 0
+        return render_template('home2.html', user=uname, permission="Sorry! you don't have access to this feature")
+    return render_template('home2.html', user=uname, permission="")
+
+@app.route('/newVideo', methods = ['GET', 'POST'])
+def displays():
+    return render_template('video.html')
 
 @app.route('/user/<user_id>', methods=['GET'])
 def find(user_id):
@@ -164,12 +182,14 @@ def find(user_id):
 
 @app.route('/users', methods = ['POST', 'GET'])
 def display():
+    global not_allowed
     token = session.get('jwt_token')
     if not token:
         return redirect(url_for('index'))
     print(session['user_details']['username'])
     uname = session['user_details']['username'];
     if uname != 'Admin':
+        not_allowed = 1
         return redirect(url_for('newHome'))
     # cur.execute('SELECT * FROM users')
     # user = cur.fetchall()
@@ -195,7 +215,6 @@ def display():
 #     cur.execute(sql, (filename, binary_data))
 #     mydb.commit()
 #     return ''
-    
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
     session.pop('jwt_token', None)
