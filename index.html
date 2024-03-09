@@ -60,45 +60,71 @@
             margin: 0 auto;
             width: 80%;
         }
+
+        a {
+            text-decoration: none;
+            border: 1px solid white;
+            padding: 2px; 
+            border-radius: 5px; 
+            background-color: white; 
+            color: black;
+        }
+        
+        button {
+            border: 1px solid white;
+            padding: 2px; 
+            border-radius: 5px; 
+            background-color: white; 
+            color: black;
+        }
+
+        a:hover {
+            border: 1px solid black;
+            background-color: black; 
+            color: white;
+        }
+
+        button:hover {
+            border: 1px solid black;
+            background-color: black; 
+            color: white;
+        }
     </style>
 </head>
 <body>
     <div id="drop-area">
-        <form class="my-form" action="/video" method="post" enctype="multipart/form-data">
+        <form class="my-form" action="/video" method="post" enctype="multipart/form-data" id="myForm">
             <p>Upload multiple files with the file dialog or by dragging and dropping images onto the solid boundary</p>
-            <input type="file" id="fileElem" multiple accept="image/*" onchange="handleFiles(this.files)" name="image">
+            <input type="file" id="fileElem" multiple accept="image/*" oninput="handleFiles(this.files)" onfocus="save_oldfiles()" name="image"><br>
+            <h3>Uploaded Files</h3>
+            <ul id="file-list"></ul>
+            <div id="gallery"></div>
+            <h3>Select Photos for Video</h3>
+            <div id="photo-selection"></div>
+            <h3>Add Background Music</h3>
+            <input type="radio" id="musicFile1" onchange="handleMusic(this.value)" name="bgm" value="Chaleya">
+            <label for="musicFile1">Chaleya</label><br>
+            <input type="radio" id="musicFile2" onchange="handleMusic(this.value)" name="bgm" value="Heeriye">
+            <label for="musicFile2">Heeriye</label><br>
+            <input type="radio" id="musicFile3" onchange="handleMusic(this.value)" name="bgm" value="Happy Birthday To You Ji">
+            <label for="musicFile3">Happy Birthday To You Ji</label><br>
+            <input type="radio" id="musicFile4" onchange="handleMusic(this.value)" name="bgm" value="INDUSTRY-BABY">
+            <label for="musicFile4">Industry Baby</label><br><br><br>
+            <!-- <button id="confirm-selection-button" onclick="handleConfirmSelection()">Confirm Selection</button><br><br> -->
             <input type="submit">
+            <!-- <a href="/newVideo" style="display: none;" id="preview-tag">Preview</a> -->
         </form>
-        <h3>Uploaded Files</h3>
-        <ul id="file-list"></ul>
-        <div id="gallery"></div>
     </div>
     <div align="center">
-        <h3>Select Photos for Video</h3>
-        <div id="photo-selection"></div>
-        <h3>Add Background Music</h3>
-        <input type="radio" id="musicFile1" onchange="handleMusic(this.value)" name="bgm" value="Chaleya">
-        <label for="musicFile1">Chaleya</label><br>
-        <input type="radio" id="musicFile2" onchange="handleMusic(this.value)" name="bgm" value="Heeriye">
-        <label for="musicFile2">Heeriye</label><br>
-        <input type="radio" id="musicFile3" onchange="handleMusic(this.value)" name="bgm" value="Happy Birthday To You Ji">
-        <label for="musicFile3">Happy Birthday To You Ji</label><br>
-        <input type="radio" id="musicFile4" onchange="handleMusic(this.value)" name="bgm" value="INDUSTRY-BABY">
-        <label for="musicFile4">INDUSTRY-BABY</label><br>
-        <br><br>
-    </div>
-    <div align="center">
-        <button id="confirm-selection-button" onclick="handleConfirmSelection()">Confirm Selection</button><br><br>
-        <button id="preview-button" style="display: none;" onclick="handlePreview()">Preview</button>
     </div>
     <script>
-document.addEventListener('DOMContentLoaded', function() {
+            let dropArea = document.getElementById('drop-area');
 
-    let dropArea = document.getElementById('drop-area');
-    let confirmButton = document.getElementById('confirm-selection-button');
-    confirmButton.addEventListener('click', function() {
-        handleConfirmSelection();
-    });
+document.addEventListener('DOMContentLoaded', function() {
+    // let confirmButton = document.getElementById('confirm-selection-button');
+    // confirmButton.addEventListener('click', function() {
+    //     handleConfirmSelection();
+    // });
 
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropArea.addEventListener(eventName, preventDefaults, false);
@@ -116,6 +142,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
+// document.getElementById('myForm').addEventListener('submit', function(event) {
+//     event.preventDefault();
+// })
 
 function preventDefaults(e) {
     e.preventDefault();
@@ -133,13 +162,38 @@ function unhighlight(e) {
 function handleDrop(e) {
     let dt = e.dataTransfer;
     let files = dt.files;
+    save_oldfiles();
     handleFiles(files);
 }
 
-function handleFiles(files) {
-    const gallery = document.getElementById('gallery');
-    gallery.innerHTML = ''; // Clear previous images
+let old_files = document.getElementById("fileElem").files;
 
+function save_oldfiles(){
+    old_files = document.getElementById("fileElem").files;
+    console.log("wndc",old_files)
+}
+
+
+function handleFiles(files) {
+    // const gallery = document.getElementById('gallery');
+    
+    // old_files = document.getElementById("fileElem").files;
+    const mergedFiles = Array.from(files).concat(Array.from(old_files));
+    console.log("merged", mergedFiles)
+    const mergedFileList = [];
+    mergedFiles.forEach(file => {
+        const newfile = new File([file], file.name, { type: file.type });
+        mergedFileList.push(newfile);
+    });
+    
+    const dataTransfer = new DataTransfer();
+    
+    mergedFileList.forEach(file => {
+        dataTransfer.items.add(file);
+    });
+
+    console.log(mergedFileList)
+    document.getElementById("fileElem").files = dataTransfer.files;
     Array.from(files).forEach(file => {
         previewFile(file);
         displayFileName(file);
@@ -153,7 +207,7 @@ function previewFile(file) {
     reader.onloadend = function() {
         const img = document.createElement('img');
         img.src = reader.result;
-        img.className = 'preview-image'; // Add a class for styling
+        img.className = 'preview-image';
         gallery.appendChild(img);
     };
 }
@@ -165,13 +219,11 @@ function displayFileName(file) {
     fileList.appendChild(listItem);
 }
 
-function uploadFile(file) {
-    // Implement file upload logic here
-}
-
 function handleMusic(value) {
     console.log('Selected music file:', value);
 }
+
+const imgs = [];
 
 function addCheckbox(file) {
     const photoSelectionDiv = document.getElementById('photo-selection');
@@ -190,15 +242,20 @@ function addCheckbox(file) {
     photoSelectionDiv.appendChild(checkbox);
     photoSelectionDiv.appendChild(label);
     photoSelectionDiv.appendChild(br);
+    console.log(file.name)
+    checkbox.addEventListener('click', function() {
+        addElementToArray(file.name)
+    });
+}
+
+function addElementToArray(string) {
+    imgs.push(string)
 }
 
 function handleConfirmSelection() {
-    const previewButton = document.getElementById('preview-button');
-    previewButton.style.display = 'block';
-}
-
-function handlePreview() {
-    window.location.href = 'http://127.0.0.1:5500/Project_pRock/templates/video.html';
+    console.log(imgs)
+    // const previewButton = document.getElementById('preview-tag');
+    // previewButton.style.display = 'inline';
 }
     </script>
 </body>
