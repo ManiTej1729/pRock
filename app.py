@@ -5,6 +5,7 @@ import pymysql
 import pymysql.cursors
 import datetime
 import jwt
+import base64
 
 app = Flask(__name__)
 app.secret_key = "this_is_worlds_most_secured_secret_key"
@@ -25,6 +26,9 @@ salt = bcrypt.gensalt()
 def hash_password(password):
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
     return hashed_password.decode('utf-8')
+
+def blob_to_base64(blob_data):
+    return base64.b64encode(blob_data).decode('utf-8')
 
 not_allowed = 0
 
@@ -72,7 +76,7 @@ def video():
                 mydb.commit()
                 print(fId, filename)
     # return render_template("index.html")
-    return render_template('video.html')
+    return render_template('home2.html')
 
 @app.route('/next/<typer>', methods=['POST', 'GET'])
 def add(typer):
@@ -187,7 +191,7 @@ def display():
     if not token:
         return redirect(url_for('index'))
     print(session['user_details']['username'])
-    uname = session['user_details']['username'];
+    uname = session['user_details']['username']
     if uname != 'Admin':
         not_allowed = 1
         return redirect(url_for('newHome'))
@@ -215,6 +219,31 @@ def display():
 #     cur.execute(sql, (filename, binary_data))
 #     mydb.commit()
 #     return ''
+
+@app.route('/create', methods=['GET', 'POST'])
+def crVid():
+    img_blobs = []
+    unique_uname = session['user_details']['username']
+    print(unique_uname)
+    query = f'select id from users where username = "{unique_uname}"'
+    print(query)
+    cur.execute(query)
+    uId = cur.fetchone()
+    uId = uId[0]
+    print(uId)
+    query = f'select bindata from uploaded_images where user_id = {uId}'
+    cur.execute(query)
+    lists = cur.fetchall()
+    # print(lists)
+    nice_images  =[]
+    for items in lists:
+        img_blobs.append(items[0])
+    for blobs in img_blobs:
+        nice_images.append(blob_to_base64(blobs))
+    # print(nice_images)
+    
+    return render_template('select.html', nice_images=nice_images)
+
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
     session.pop('jwt_token', None)
