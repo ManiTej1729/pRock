@@ -84,18 +84,25 @@
         text-align: center;
         padding: 10px 0;
     }
-    /* #images {
-      display: flex;
-      justify-content: space-around;
-    } */
+    #images {
+      /* display: inline; */
+      /* justify-content: space-around; */
+      /* display: flex;       Set the container as a flex container */
+      /*flex-wrap: nowrap;    Prevent items from wrapping onto a new line */
+      /* overflow-x: auto; */
+    }
   </style>
 </head>
 <body>
+    <hr>
     <div id="images">
       {% for image_base64 in nice_images %}
-      <img src="data:image/*;base64,{{ image_base64 }}" alt="Image", height="200px" width="auto">
+      <img src="data:image/*;base64,{{ image_base64 }}" alt="Image", height="200px" width="auto" id="choose">
       {% endfor %}
     </div>
-    
+    <hr><hr>
+    <div id="chosen">
+
+    </div>
 </body>
 </html>
