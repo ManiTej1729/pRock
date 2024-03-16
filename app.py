@@ -46,8 +46,8 @@ def video():
         return redirect(url_for('index'))
     # payload = jwt.decode(token, "!@#$%", algorithms=['HS256'])
     print("entered")
-    js_data = request.json
-    print(js_data)
+    # js_data = request.json
+    # print(js_data)
     files = request.files.getlist('image')
     print("number: ", files)
     uname = session['user_details']['username']
@@ -96,7 +96,7 @@ def add(typer):
         with open('users.txt', 'r') as file:
             for line in file:
                 tempLine = json.loads(line)
-                if tempLine['email'] == email:
+                if tempLine['email'] == email or tempLine['name'] == name:
                     print(tempLine)
                     return render_template("login.html", err="User already exists", new=typer)
         with open('users.txt', 'a+') as file:
