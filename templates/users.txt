@@ -1,2 +1,0 @@
-{"name": "asg", "email": "fw@gd", "password": "$2b$12$1wC.nvq2K42KfhwX.vV3rutVjORKRvVIdVMK19KR5a0PHbj6hz6aa"}
-{"name": "jbh", "email": "bdwq@ib", "password": "$2b$12$EQbEQ/ivgJeKonCaFbAGuOcSvUp6dq1pYLSzUjcuLRlimlg9nt8ZO"}
