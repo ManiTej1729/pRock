@@ -3,20 +3,133 @@
 <head>
     <title>Video Example</title>
     <style>
-        .video {
-            position: absolute;
-            float: left;
-            top: 50%;
-            transform: translate(26%, -47%) scale(1.5);
+        .video-container {
+            position: relative;
             border-radius: 20px;
+            overflow: hidden;
+        }
+        video {
+            width: 90%;
+            height: 60%;
+        }
+        .controls {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .controls button {
+            margin: 0 10px; /* Added margin */
+            background-color: transparent;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        /* Define styles for the mute/unmute icon */
+        .controls button.mute::after {
+            content: url('mute_icon.svg');
+        }
+        .controls button.unmute::after {
+            content: url('unmute_icon.svg');
         }
     </style>
 </head>
-<body style="background-image: url('b.png'); width: 100%; height: 100%;">
-    <video width="1300px" height="auto" controls class="video">
-        <source src="1.mp4" type="video/mp4">
-     
-    </video>
+<body style="background-image: url('../staticcc/b.png'); width: 90%; height: 60%;">
+    <label for="resolution" style="color: white;margin-left: 700px;">Select Resolution:</label>
+    <select id="resolution">
+        <option value="640x360">640x360</option>
+        <option value="1280x720">1280x720</option>
+        <option value="1920x1080">1920x1080</option>
+    </select>
+
+    <label for="quality" style="color: white;margin-left: -700px;">Select Quality:</label>
+    <input type="range" id="quality" min="1" max="100" value="50">
+
+    <button onclick="processVideo()">Process Video</button>
+
+    <div class="video-container">
+        <video id="video">
+            <source src="1.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="controls">
+            <button onclick="playPause()">▶︎/ II</button>
+            <button onclick="rewind()">↩︎</button>
+            <div class="speed-control">
+                <button onclick="toggleSpeedMenu()">Speed</button>
+                <div id="speedOptions" class="speed-options">
+                    <button onclick="changeSpeed(0.5)">0.5x</button>
+                    <button onclick="changeSpeed(1)">1x</button>
+                    <button onclick="changeSpeed(1.5)">1.5x</button>
+                </div>
+            </div>
+            <button onclick="toggleMute()" id="muteButton" class="unmute">🔇/🔈</button>
+        </div>
+    </div>
+
     <h2 style="text-align: center;">Moye moye</h2>
+
+    <script>
+        const video = document.getElementById('video');
+        const muteButton = document.getElementById('muteButton');
+        const speedOptions = document.getElementById('speedOptions');
+
+        function playPause() {
+            if (video.paused) {
+                video.play();
+            } else {
+                video.pause();
+            }
+        }
+
+        function rewind() {
+            video.currentTime -= 10; // Rewind by 10 seconds
+        }
+
+        function changeSpeed(speed) {
+            video.playbackRate = speed;
+            speedOptions.classList.remove('show');
+        }
+
+        function toggleMute() {
+            video.muted = !video.muted;
+            if (video.muted) {
+                muteButton.classList.remove('unmute');
+                muteButton.classList.add('mute');
+            } else {
+                muteButton.classList.remove('mute');
+                muteButton.classList.add('unmute');
+            }
+        }
+
+        function toggleSpeedMenu() {
+            speedOptions.classList.toggle('show');
+        }
+
+        function constructVideoUrl(resolution, quality) {
+            return '1.mp4';
+        }
+
+        function processVideo() {
+            const selectedResolution = document.getElementById('resolution').value;
+            const selectedQuality = document.getElementById('quality').value;
+            const videoUrl = constructVideoUrl(selectedResolution, selectedQuality);
+            document.getElementById('video').src = videoUrl;
+            video.load();
+            
+            // Parse the selected resolution and set the width and height attributes of the video
+            const [width, height] = selectedResolution.split('x');
+            video.width = width;
+            video.height = height;
+        }
+    </script>
 </body>
+<footer class="footer">
+    <h2>pRock</h2>
+    <p>Copyright © 2024 pRock Pvt. Ltd. All rights reserved.</p>
+</footer>
 </html>
