@@ -90,14 +90,14 @@
             color: white;
         }
         .footer {
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-        background: linear-gradient(to right, #2980b9, #6dd5fa, #ffffff);
-        color: black;
-        text-align: center;
-        padding: 10px 0;
-    }
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: linear-gradient(to right, #2980b9, #6dd5fa, #ffffff);
+            color: black;
+            text-align: center;
+            padding: 10px 0;
+        }
     </style>
 </head>
 <body>
@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // });
 
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        dropArea.addEventListener(eventName, preventDefaults, false);
+        dropArea.addEventListener(eventName,    Defaults, false);
     });
 
     ['dragenter', 'dragover'].forEach(eventName => {
@@ -151,11 +151,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
-document.getElementById('myForm').addEventListener('submit', function() {
-    createJSON();
-})
-
-
+// document.getElementById('myForm').addEventListener('submit', function() {
+//     createJSON();
+// })
 
 function preventDefaults(e) {
     e.preventDefault();
