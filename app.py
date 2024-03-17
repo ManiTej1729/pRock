@@ -1,11 +1,14 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify, session
-import bcrypt
+import datetime
 import json
+import base64
+import io
+import cv2 as cv
+import numpy as np
+import bcrypt
 import pymysql
 import pymysql.cursors
-import datetime
 import jwt
-import base64
+from flask import Flask, render_template, request, redirect, url_for, jsonify, session, Response
 
 app = Flask(__name__)
 app.secret_key = "this_is_worlds_most_secured_secret_key"
@@ -16,7 +19,7 @@ mydb = pymysql.connect(
     database = "media_database"
 )
 
-if(mydb.open): 
+if mydb.open:
     print("Connected")
     cur = mydb.cursor()
     cur.execute("use media_database")
@@ -30,12 +33,27 @@ def hash_password(password):
 def blob_to_base64(blob_data):
     return base64.b64encode(blob_data).decode('utf-8')
 
+def base64_to_blob(base64_string):
+    decoded_bytes = base64.b64decode(base64_string)
+    blob = io.BytesIO(decoded_bytes)
+    return blob.getvalue()
+
+def resize(blob_data):
+    nparr = np.frombuffer(blob_data, np.uint8)
+    image = cv.imdecode(nparr, cv.IMREAD_COLOR)
+
+    print(type(image))
+    new_width = 800
+    new_height = 600
+    resized_image = cv.resize(image, (new_width, new_height))
+    return resized_image.tostring()
+
 not_allowed = 0
 
 @app.route('/', methods=['POST','GET'])
 def index():
     return render_template("home.html")
-    
+
 @app.route('/phin', methods=['POST', 'GET'])
 def phin():
     token = session.get('jwt_token')
@@ -48,18 +66,15 @@ def video():
     token = session.get('jwt_token')
     if not token:
         return redirect(url_for('index'))
-    # payload = jwt.decode(token, "!@#$%", algorithms=['HS256'])
-    print("entered")
-    # js_data = request.json
-    # print(js_data)
+    # print("entered")
     files = request.files.getlist('image')
-    print("number: ", files)
+    # print("number: ", files)
     uname = session['user_details']['username']
-    print(uname)
+    # print(uname)
     query = 'SELECT id FROM users WHERE username = %s'
     cur.execute(query, uname)
     fId = cur.fetchone()
-    print("fid: ", fId)
+    # print("fid: ", fId)
     if fId:
         for img in files:
             print(img)
@@ -68,21 +83,20 @@ def video():
             fileblob = img.read()
             filesize = len(fileblob)
             fidin = int(fId[0])
-            print("file size: ", filesize)
+            # print("file size: ", filesize)
             # print("Bin data: ", fileblob)
             if filesize != 0:
                 query = f'INSERT INTO uploaded_images (user_id, image_name, fsize, bindata) VALUES ({fidin}, "{filename}", {filesize}, %s)'
                 cur.execute(query, (fileblob))
                 mydb.commit()
                 print(fId, filename)
-    # return render_template("index.html")
     return render_template('home2.html')
 
 @app.route('/next/<typer>', methods=['POST', 'GET'])
 def add(typer):
     token = session.get('jwt_token')
     if token:
-        return redirect(url_for('newHome'))  
+        return redirect(url_for('newHome'))
     if request.method == 'POST' and typer == 'signin':
         name = request.form.get('name')
         email = request.form.get('email')
@@ -101,7 +115,7 @@ def add(typer):
             for line in file:
                 tempLine = json.loads(line)
                 if tempLine['email'] == email or tempLine['name'] == name:
-                    print(tempLine)
+                    # print(tempLine)
                     return render_template("login.html", err="User already exists", new=typer)
         with open('users.txt', 'a+') as file:
             json.dump(user_data, file)
@@ -121,7 +135,6 @@ def add(typer):
         mydb.commit()
         return redirect(url_for('newHome'))
     elif request.method == 'POST' and typer == 'login':
-        print("neucwvui")
         # name = request.form.get('name')
         email = request.form.get('email')
         password = request.form.get('password')
@@ -131,7 +144,7 @@ def add(typer):
         name = cur.fetchone()
         if name == None:
             return render_template("login.html", err="User not found", new=typer)
-        print("name :", name[0])
+        # print("name :", name[0])
         user_data = {
             "email": email,
             "password": password
@@ -151,11 +164,11 @@ def add(typer):
                         token = jwt.encode(payload, secret_key, algorithm='HS256')
                         session['jwt_token'] = token
                         session['user_details'] = {'username': name[0]}
-                        print(session)
+                        # print(session)
                         return redirect(url_for('newHome'))
             return render_template("login.html", err="Incorrect username / password", new=typer)
     return render_template("login.html", new=typer)
-    
+
 @app.route('/home2', methods=['POST', 'GET'])
 def newHome():
     global not_allowed
@@ -190,7 +203,6 @@ def display():
     token = session.get('jwt_token')
     if not token:
         return redirect(url_for('index'))
-    print(session['user_details']['username'])
     uname = session['user_details']['username']
     if uname != 'Admin':
         not_allowed = 1
@@ -204,7 +216,7 @@ def display():
             LIST.append(lineTemp)
         return jsonify(LIST)
     # return render_template('display.html', user=user)
-    
+
 # @app.route('/upload', methods=['POST'])
 # def upload_file():
 #     token = session.get('jwt_token')
@@ -224,13 +236,13 @@ def display():
 def crVid():
     img_blobs = []
     unique_uname = session['user_details']['username']
-    print(unique_uname)
+    # print(unique_uname)
     query = f'select id from users where username = "{unique_uname}"'
-    print(query)
+    # print(query)
     cur.execute(query)
     uId = cur.fetchone()
     uId = uId[0]
-    print(uId)
+    # print(uId)
     query = f'select bindata from uploaded_images where user_id = {uId}'
     cur.execute(query)
     lists = cur.fetchall()
@@ -241,8 +253,27 @@ def crVid():
     for blobs in img_blobs:
         nice_images.append(blob_to_base64(blobs))
     # print(nice_images)
-    
+
     return render_template('select.html', nice_images=nice_images)
+
+@app.route('/slideshow', methods = ['GET', 'POST'])
+def show():
+    fetched_data = request.form.getlist('images')
+    # print(fetched_data)
+    bg_music = request.form.get('bgm')
+    print(bg_music)
+    audio_flag = request.form.get('music_flag')
+    print(audio_flag)
+    blobs = []
+    for imgs in fetched_data:
+        blobs.append(base64_to_blob(imgs))
+    # print(blobs)
+    resized_blobs = []
+    for blob in blobs:
+        resized_blobs.append(resize(blob))
+    print(resized_blobs)
+    return Response("success", 200)
+
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
@@ -250,11 +281,7 @@ def logout():
     session.pop('user_details', None)
     return redirect(url_for('index'))
 
-@app.route('/slideshow', methods = ['GET', 'POST'])
-def show():
-    return render_template('video.html')
-
-if __name__ == "__main__":  
+if __name__ == "__main__":
     app.run(debug=True)
 
 mydb.commit()
