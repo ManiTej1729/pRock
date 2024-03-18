@@ -41,8 +41,8 @@ def base64_to_blob(base64_string):
 def resize(blob_data):
     nparr = np.frombuffer(blob_data, np.uint8)
     image = cv.imdecode(nparr, cv.IMREAD_COLOR)
+    print("image: ", image)
 
-    print(type(image))
     new_width = 800
     new_height = 600
     resized_image = cv.resize(image, (new_width, new_height))
@@ -84,13 +84,13 @@ def video():
             filesize = len(fileblob)
             fidin = int(fId[0])
             # print("file size: ", filesize)
-            # print("Bin data: ", fileblob)
+            print("Bin data: ", fileblob)
             if filesize != 0:
                 query = f'INSERT INTO uploaded_images (user_id, image_name, fsize, bindata) VALUES ({fidin}, "{filename}", {filesize}, %s)'
                 cur.execute(query, (fileblob))
                 mydb.commit()
                 print(fId, filename)
-    return render_template('home2.html')
+    return redirect(url_for('newHome'))
 
 @app.route('/next/<typer>', methods=['POST', 'GET'])
 def add(typer):
@@ -217,21 +217,6 @@ def display():
         return jsonify(LIST)
     # return render_template('display.html', user=user)
 
-# @app.route('/upload', methods=['POST'])
-# def upload_file():
-#     token = session.get('jwt_token')
-#     if not token:
-#         return redirect(url_for('index'))
-#     file = request.files['file']
-#     binary_data = file.read()
-#     filename = file.filename
-#     # sql = "INSERT INTO uploaded_images (image_name, image_data) VALUES (%s, %s)"
-#     # cur.execute(sql, (filename, binary_data))
-#     sql = "INSERT INTO uploaded_images (image_name, image_data) VALUES (%s, %s)"
-#     cur.execute(sql, (filename, binary_data))
-#     mydb.commit()
-#     return ''
-
 @app.route('/create', methods=['GET', 'POST'])
 def crVid():
     img_blobs = []
@@ -250,10 +235,12 @@ def crVid():
     nice_images  =[]
     for items in lists:
         img_blobs.append(items[0])
+    if len(img_blobs) == 0:
+        uname = session['user_details']['username']
+        return render_template('home2.html', user=uname, permission="No images are selected")
     for blobs in img_blobs:
         nice_images.append(blob_to_base64(blobs))
     # print(nice_images)
-
     return render_template('select.html', nice_images=nice_images)
 
 @app.route('/slideshow', methods = ['GET', 'POST'])
@@ -267,11 +254,12 @@ def show():
     blobs = []
     for imgs in fetched_data:
         blobs.append(base64_to_blob(imgs))
-    # print(blobs)
+    print(blobs)
+    print("before")
     resized_blobs = []
     for blob in blobs:
         resized_blobs.append(resize(blob))
-    print(resized_blobs)
+    print("resized_blobs")
     return Response("success", 200)
 
 

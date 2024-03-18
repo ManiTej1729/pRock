@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Selection</title>
+  <style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(to right, #2980b9, #6dd5fa, #ffffff);
+        color: #fff;
+        margin: 0;
+        padding: 0;
+        background-attachment: fixed;
+        min-height: 100%;
+
+        width: max-content;
+    }
+    #images {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: space-around ;
+        width: max-content;
+        padding: 20px;
+        margin-left : 10px;
+    }
+
+    #images img {
+        width: auto;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin: 10px;
+        border: 5px solid #000000;
+        transition: transform 0.5s ease, border 0.5s ease;
+    }
+
+    #images img:hover {
+        transform: scale(1.1);
+        cursor: pointer;
+        border: 5px solid black;
+    }
+
+    .js_style {
+      width: auto;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin: 10px;
+      border: 5px solid #000000;
+      /* transition: transform 0.5s ease, border 0.5s ease;  */
+    }
+
+    .footer {
+        width: 100%;
+        /* background-color: #f0f0f0; */
+        color: #333;
+        text-align: center;
+        padding: 20px 0;
+        font-size: 18px;
+        position: fixed;
+        /* height: 100vh; */
+        bottom: 0;
+        left: 0;
+        z-index: -1;
+    }
+
+    .footer h2 {
+        margin: 0;
+        padding: 0;
+        font-weight: normal;
+        color: #2980b9;
+    }
+
+    .footer p {
+        margin: 5px 0 0;
+        font-size: 14px;
+    }
+
+    hr {
+        /* border-color: #6dd5fa; */
+        margin-top: 20px;
+        min-width: 100%;
+    }
+  </style>
+</head>
+<body>
+    <hr>
+    <div id="images">
+      {% for image_base64 in nice_images %}
+      <!-- <marquee behavior="scroll" direction="right"> -->
+      <img src="data:image/*;base64,{{ image_base64 }}" alt="Image", height="200px" width="auto" id="choose" onclick="selection(this.src)">
+      <!-- </marquee> -->
+      {% endfor %}
+    </div>
+    <hr><hr>
+    <div id="chosen" style="padding: 5px;">
+    </div><hr>
+    <h3>Add Background Music</h3>
+    <input type="radio" id="musicFile1" onchange="handleMusic(this.value)" name="bgm" value="Chaleya">
+    <label for="musicFile1">Chaleya</label><br>
+    <input type="radio" id="musicFile2" onchange="handleMusic(this.value)" name="bgm" value="Heeriye">
+    <label for="musicFile2">Heeriye</label><br>
+    <input type="radio" id="musicFile3" onchange="handleMusic(this.value)" name="bgm" value="Happy Birthday To You Ji">
+    <label for="musicFile3">Happy Birthday To You Ji</label><br>
+    <input type="radio" id="musicFile4" onchange="handleMusic(this.value)" name="bgm" value="INDUSTRY-BABY">
+    <label for="musicFile4">Industry Baby</label><br><br><br>
+            
+    <button onclick="confirmSelection()">Confirm selection</button>
+    <footer class="footer">
+      <h2>pRock</h2>
+      <p >Copyright © 2024 pRock Pvt. Ltd. All rights reserved.</p>
+    </footer>
+    <script>
+        let chosenImages = [];
+        function selection(image_src) {
+          const selected = document.getElementById('chosen');
+          const temp = document.createElement('img')
+          temp.src = image_src
+          temp.id = `${image_src}`
+          temp.alt = 'Something';
+          temp.addEventListener('click', function() {
+            selected.removeChild(temp);
+            let index = chosenImages.indexOf(image_src);
+            delete chosenImages[index];
+            console.log(chosenImages);
+          });
+          temp.classList.add('js_style');
+          selected.appendChild(temp);
+          chosenImages.push(image_src);
+          console.log(chosenImages);
+        } 
+
+        var music = ''
+        let music_flag = 1;
+
+        function handleMusic(value) {
+            console.log('Selected music file:', value);
+            music = value;
+        }
+
+        function confirmSelection() {
+          if (chosenImages.length == 0) {
+            alert('No images are chosen');
+            return;
+          }
+          if (music == '') {
+            alert("Please click 'OK' if you don't want our melodious bgm");
+            music_flag = 0;
+          }
+          let formData = new FormData();
+          formData.append('images', chosenImages);
+          formData.append('bgm', music);
+          formData.append('music_flag', music_flag);
+          console.log(formData);
+          alert('wait')
+          fetch('/slideshow', {
+            method: 'POST',
+            body: formData
+          }).then(res => 
+          {
+            if(res.status == 200){
+              console.log(res);
+              window.location.href = "/newVideo"
+            }
+          }
+          )
+          // .then(data => console.log(data))
+          // window.location.href = '/video'
+        }
+
+    </script>
+</body>
+</html>
