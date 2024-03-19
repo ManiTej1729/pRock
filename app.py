@@ -41,18 +41,27 @@ def blob_to_base64(blob_data):
 
 def base64_to_blob(base64_string):
     decoded_bytes = base64.b64decode(base64_string)
-    blob = io.BytesIO(decoded_bytes)
-    return blob.getvalue()
+    # blob = io.BytesIO(decoded_bytes)
+    return decoded_bytes
 
 def resize(blob_data):
     new_width = 800
     new_height = 600
-    img_obj = io.BytesIO(blob_data)
-    with Image.open(img_obj) as img:
-        print(img.size)
-        # resized_img = img.resize((new_width, new_height))
-        # print(resized_img.size)
-        return np.array(img)
+    # img_obj = io.BytesIO(blob_data)
+    # with Image.open(img_obj) as img:
+    #     print(img.size)
+    #     # resized_img = img.resize((new_width, new_height))
+    #     # print(resized_img.size)
+    #     return np.array(img)
+    img_array = np.frombuffer(blob_data, dtype=np.uint8)
+    # img_cv = cv.imdecode(img_array, flags=cv.IMREAD_COLOR)
+    # if img_array == None:
+    #     print("wtf")
+    print(img_array)
+    toBeReturned = img_array
+    # toBeReturned = np.array(toBeReturned)
+    print(toBeReturned.size)
+    return toBeReturned
     # base64_string = base64.b64encode(blob_data).decode('utf-8')
     # blob_bytes = base64.b64decode(base64_string)
     # nparr = np.frombuffer(blob_data, np.uint8)
@@ -281,7 +290,7 @@ def show():
     resized_nps = []
     for blob in blobs:
         resized_nps.append(resize(blob))
-    print("resized_nps")
+    print(resized_nps)
     query = f'select bindata from audio_library where audio_name = "{bg_music}"'
     cur.execute(query)
     music_blob = cur.fetchone()
