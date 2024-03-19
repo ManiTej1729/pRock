@@ -71,7 +71,6 @@ def resize(blob_data):
     # resized_image = cv.resize(image, (new_width, new_height))
     # return resized_image.tostring()
 
-
 not_allowed = 0
 
 @app.route('/', methods=['POST','GET'])
@@ -90,37 +89,43 @@ def video():
     token = session.get('jwt_token')
     if not token:
         return redirect(url_for('index'))
-    # print("entered")
+    
     files = request.files.getlist('image')
-    # print("number: ", files)
     uname = session['user_details']['username']
-    # print(uname)
+    
+    print("Username:", uname)  # Debugging print statement
+    
+    # Prepare SQL query to get the user id
     query = 'SELECT id FROM users WHERE username = %s'
-    cur.execute(query, uname)
+    print("SQL Query:", query)  # Debugging print statement
+    cur.execute(query, (uname,))
     fId = cur.fetchone()
-    # print("fid: ", fId)
+    
     if fId:
         for img in files:
-            print(img)
             filename = img.filename
-            # with open(f"{filename}", 'rb') as img:
             fileblob = img.read()
             filesize = len(fileblob)
-            fidin = int(fId[0])
-            # print("file size: ", filesize)
-            print("Bin data: ", fileblob)
+            fidin = fId[0]
+            
             if filesize != 0:
-                query = f'INSERT INTO uploaded_images (user_id, image_name, fsize, bindata) VALUES ({fidin}, "{filename}", {filesize}, %s)'
-                cur.execute(query, (fileblob))
+                # Prepare SQL query to insert image data
+                query = 'INSERT INTO uploaded_images (user_id, image_name, fsize, bindata) VALUES (%s, %s, %s, %s)'
+                print("SQL Query:", query)  # Debugging print statement
+                cur.execute(query, (fidin, filename, filesize, fileblob))
                 mydb.commit()
-                print(fId, filename)
+    
     return redirect(url_for('newHome'))
+
 
 @app.route('/next/<typer>', methods=['POST', 'GET'])
 def add(typer):
     token = session.get('jwt_token')
     if token:
         return redirect(url_for('newHome'))
+    query = 'SELECT username, email, password FROM users'
+    cur.execute(query)
+    list_of_users = cur.fetchall()
     if request.method == 'POST' and typer == 'signin':
         name = request.form.get('name')
         email = request.form.get('email')
@@ -135,15 +140,10 @@ def add(typer):
             "email": email,
             "password": password
         }
-        with open('users.txt', 'r') as file:
-            for line in file:
-                tempLine = json.loads(line)
-                if tempLine['email'] == email or tempLine['name'] == name:
-                    # print(tempLine)
-                    return render_template("login.html", err="User already exists", new=typer)
-        with open('users.txt', 'a+') as file:
-            json.dump(user_data, file)
-            file.write("\n")
+        for items in list_of_users:
+            if items[0] == name or items[1] == email:
+                return render_template("login.html", err="User already exists", new=typer)
+        query = f'insert into users (username, email, password) values ("{name}", "{email}", "{password}")'
         secret_key = '!@#$%'
         payload = {
             # 'user_id': 1,
@@ -162,9 +162,8 @@ def add(typer):
         # name = request.form.get('name')
         email = request.form.get('email')
         password = request.form.get('password')
-        query = 'SELECT username FROM users WHERE email = %s'
-
-        cur.execute(query, email)
+        query = 'SELECT username FROM users WHERE email ="email"'
+        cur.execute(query)
         name = cur.fetchone()
         if name == None:
             return render_template("login.html", err="User not found", new=typer)
@@ -173,24 +172,28 @@ def add(typer):
             "email": email,
             "password": password
         }
-        with open('users.txt', 'r') as file:
-            for line in file:
-                stri = json.loads(line)
-                if stri["email"] == email:
-                    temp = stri["password"]
-                    if bcrypt.checkpw(password.encode('utf-8'), temp.encode('utf-8')):
-                        secret_key = '!@#$%'
-                        payload = {
-                            # 'user_id': 1,
-                            'username': name[0],
-                            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)  # Token expiration time
-                        }
-                        token = jwt.encode(payload, secret_key, algorithm='HS256')
-                        session['jwt_token'] = token
-                        session['user_details'] = {'username': name[0]}
-                        # print(session)
-                        return redirect(url_for('newHome'))
-            return render_template("login.html", err="Incorrect username / password", new=typer)
+        # for items in list_of_users:
+        #     if items[1] == email:
+        #         temp = items[2]
+        #         if bcrypt.checkpw(password.encode('utf-8'), temp.encode('utf-8')):
+                    
+        # with open('users.txt', 'r') as file:
+        for items in list_of_users:
+            if items[1] == email:
+                temp = items[2]
+                if bcrypt.checkpw(password.encode('utf-8'), temp.encode('utf-8')):
+                    secret_key = '!@#$%'
+                    payload = {
+                        # 'user_id': 1,
+                        'username': name[0],
+                        'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1)  # Token expiration time
+                    }
+                    token = jwt.encode(payload, secret_key, algorithm='HS256')
+                    session['jwt_token'] = token
+                    session['user_details'] = {'username': name[0]}
+                    # print(session)
+                    return redirect(url_for('newHome'))
+        return render_template("login.html", err="Incorrect username / password", new=typer)
     return render_template("login.html", new=typer)
 
 @app.route('/home2', methods=['POST', 'GET'])
@@ -209,18 +212,6 @@ def newHome():
 def displays():
     return render_template('video.html')
 
-@app.route('/user/<user_id>', methods=['GET'])
-def find(user_id):
-    token = session.get('jwt_token')
-    if not token:
-        return redirect(url_for('index'))
-    with open('users.txt', 'r') as file:
-        for line in file:
-            stri = json.loads(line)
-            if stri["name"] == user_id:
-                return jsonify(stri)
-    return "User doesn't exists"
-
 @app.route('/users', methods = ['POST', 'GET'])
 def display():
     global not_allowed
@@ -231,37 +222,36 @@ def display():
     if uname != 'Admin':
         not_allowed = 1
         return redirect(url_for('newHome'))
-    # cur.execute('SELECT * FROM users')
-    # user = cur.fetchall()
-    with open('users.txt') as file:
-        LIST = []
-        for line in file:
-            lineTemp = json.loads(line)
-            LIST.append(lineTemp)
-        return jsonify(LIST)
-    # return render_template('display.html', user=user)
+    query = 'select username, email, password from users'
+    cur.execute(query)
+    list_of_users = cur.fetchall()
+    print(list_of_users)
+    return jsonify(list_of_users)
 
 @app.route('/create', methods=['GET', 'POST'])
 def crVid():
     img_blobs = []
     unique_uname = session['user_details']['username']
-    # print(unique_uname)
-    query = f'select id from users where username = "{unique_uname}"'
-    print(query)
-    cur.execute(query)
-    uId = cur.fetchone()
-    uId = uId[0]
-    # print(uId)
-    query = f'select bindata from uploaded_images where user_id = {uId}'
-    cur.execute(query)
-    lists = cur.fetchall()
-    query = f'select image_name from uploaded_images where user_id = {uId}'
-    cur.execute(query)
-    names = cur.fetchall()
-    actual_names = []
-    for fileName in names:
-        actual_names.append(fileName[0])
     
+    query = 'SELECT id FROM users WHERE username = %s'
+    cur.execute(query, (unique_uname,))
+    uId = cur.fetchone()
+    uId = uId[0] if uId else None
+    
+    if uId:
+        # Prepare SQL query to fetch image data
+        query = 'SELECT bindata FROM uploaded_images WHERE user_id = %s'
+        cur.execute(query, (uId,))
+        lists = cur.fetchall()
+
+        # Prepare SQL query to fetch image names
+        query = 'SELECT image_name FROM uploaded_images WHERE user_id = %s'
+        cur.execute(query, (uId,))
+        names = cur.fetchall()
+        
+        actual_names = [fileName[0] for fileName in names]
+    else:
+        actual_names = []
     # print(lists)
     nice_images  =[]
     for items in lists:
@@ -291,8 +281,8 @@ def show():
     for blob in blobs:
         resized_nps.append(resize(blob))
     print(resized_nps)
-    query = f'select bindata from audio_library where audio_name = "{bg_music}"'
-    cur.execute(query)
+    query = 'SELECT bindata FROM audio_library WHERE audio_name = "big_music"'
+    cur.execute(query, (bg_music,))
     music_blob = cur.fetchone()
     music_blob = music_blob[0]
     # print(music_blob)
