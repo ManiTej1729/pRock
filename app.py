@@ -13,16 +13,16 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify, s
 
 app = Flask(__name__)
 app.secret_key = "this_is_worlds_most_secured_secret_key"
-mydb = pymysql.connect(
-    host = "localhost",
-    user = "root",
-    password = "Vedp9565@",
-    database = "media_database"
-)
-# mydb=psycopg2.connect("postgresql://mani:z4bDr5qHTH1ZrvssZX0gGw@pencil-rocket-1186.j77.cockroachlabs.cloud:26257/pRock?sslmode=verify-full")
-# cur = mydb.cursor()
+# mydb = pymysql.connect(
+#     host = "localhost",
+#     user = "root",
+#     password = "Vedp9565@",
+#     database = "media_database"
+# )
+mydb=psycopg2.connect("postgresql://mani:z4bDr5qHTH1ZrvssZX0gGw@pencil-rocket-1186.j77.cockroachlabs.cloud:26257/pRock?sslmode=verify-full")
+cur = mydb.cursor()
 # cur.execute("CREATE DATABASE pRock")
-# cur.execute("use pRock")
+cur.execute("use pRock")
 if mydb.open:
     print("Connected")
     cur = mydb.cursor()
