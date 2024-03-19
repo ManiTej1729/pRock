@@ -6,6 +6,7 @@ import cv2 as cv
 import numpy as np
 import bcrypt
 import pymysql
+import psycopg2
 import pymysql.cursors
 import jwt
 from flask import Flask, render_template, request, redirect, url_for, jsonify, session, Response
@@ -18,7 +19,10 @@ mydb = pymysql.connect(
     password = "Vedp9565@",
     database = "media_database"
 )
-
+# mydb=psycopg2.connect("postgresql://mani:z4bDr5qHTH1ZrvssZX0gGw@pencil-rocket-1186.j77.cockroachlabs.cloud:26257/pRock?sslmode=verify-full")
+# cur = mydb.cursor()
+# cur.execute("CREATE DATABASE pRock")
+# cur.execute("use pRock")
 if mydb.open:
     print("Connected")
     cur = mydb.cursor()
@@ -42,7 +46,7 @@ def resize(blob_data):
     nparr = np.frombuffer(blob_data, np.uint8)
     image = cv.imdecode(nparr, cv.IMREAD_COLOR)
     print("image: ", image)
-
+    # print(blob_data)
     new_width = 800
     new_height = 600
     resized_image = cv.resize(image, (new_width, new_height))
@@ -223,7 +227,7 @@ def crVid():
     unique_uname = session['user_details']['username']
     # print(unique_uname)
     query = f'select id from users where username = "{unique_uname}"'
-    # print(query)
+    print(query)
     cur.execute(query)
     uId = cur.fetchone()
     uId = uId[0]
@@ -231,6 +235,13 @@ def crVid():
     query = f'select bindata from uploaded_images where user_id = {uId}'
     cur.execute(query)
     lists = cur.fetchall()
+    query = f'select image_name from uploaded_images where user_id = {uId}'
+    cur.execute(query)
+    names = cur.fetchall()
+    actual_names = []
+    for fileName in names:
+        actual_names.append(fileName[0])
+    
     # print(lists)
     nice_images  =[]
     for items in lists:
@@ -241,7 +252,7 @@ def crVid():
     for blobs in img_blobs:
         nice_images.append(blob_to_base64(blobs))
     # print(nice_images)
-    return render_template('select.html', nice_images=nice_images)
+    return render_template('select.html', nice_images=nice_images, searchList=actual_names)
 
 @app.route('/slideshow', methods = ['GET', 'POST'])
 def show():
