@@ -2,6 +2,7 @@ import datetime
 import json
 import base64
 import io
+# from io import BytesIO
 import cv2 as cv
 import numpy as np
 import bcrypt
@@ -9,20 +10,21 @@ import pymysql
 import psycopg2
 import pymysql.cursors
 import jwt
+from PIL import Image
 from flask import Flask, render_template, request, redirect, url_for, jsonify, session, Response
 
 app = Flask(__name__)
 app.secret_key = "this_is_worlds_most_secured_secret_key"
-# mydb = pymysql.connect(
-#     host = "localhost",
-#     user = "root",
-#     password = "Vedp9565@",
-#     database = "media_database"
-# )
-mydb=psycopg2.connect("postgresql://mani:z4bDr5qHTH1ZrvssZX0gGw@pencil-rocket-1186.j77.cockroachlabs.cloud:26257/pRock?sslmode=verify-full")
-cur = mydb.cursor()
+mydb = pymysql.connect(
+    host = "localhost",
+    user = "root",
+    password = "Vedp9565@",
+    database = "media_database"
+)
+# mydb=psycopg2.connect("postgresql://mani:z4bDr5qHTH1ZrvssZX0gGw@pencil-rocket-1186.j77.cockroachlabs.cloud:26257/pRock?sslmode=verify-full")
+# cur = mydb.cursor()
 # cur.execute("CREATE DATABASE pRock")
-cur.execute("use pRock")
+# cur.execute("use pRock")
 if mydb.open:
     print("Connected")
     cur = mydb.cursor()
@@ -43,14 +45,23 @@ def base64_to_blob(base64_string):
     return blob.getvalue()
 
 def resize(blob_data):
-    nparr = np.frombuffer(blob_data, np.uint8)
-    image = cv.imdecode(nparr, cv.IMREAD_COLOR)
-    print("image: ", image)
-    # print(blob_data)
     new_width = 800
     new_height = 600
-    resized_image = cv.resize(image, (new_width, new_height))
-    return resized_image.tostring()
+    img_obj = io.BytesIO(blob_data)
+    with Image.open(img_obj) as img:
+        print(img.size)
+        # resized_img = img.resize((new_width, new_height))
+        # print(resized_img.size)
+        return np.array(img)
+    # base64_string = base64.b64encode(blob_data).decode('utf-8')
+    # blob_bytes = base64.b64decode(base64_string)
+    # nparr = np.frombuffer(blob_data, np.uint8)
+    # image = cv.imdecode(nparr, cv.IMREAD_COLOR)
+    # print("image: ", image)
+    # # print(blob_data)
+    # resized_image = cv.resize(image, (new_width, new_height))
+    # return resized_image.tostring()
+
 
 not_allowed = 0
 
@@ -267,10 +278,15 @@ def show():
         blobs.append(base64_to_blob(imgs))
     print(blobs)
     print("before")
-    resized_blobs = []
+    resized_nps = []
     for blob in blobs:
-        resized_blobs.append(resize(blob))
-    print("resized_blobs")
+        resized_nps.append(resize(blob))
+    print("resized_nps")
+    query = f'select bindata from audio_library where audio_name = "{bg_music}"'
+    cur.execute(query)
+    music_blob = cur.fetchone()
+    music_blob = music_blob[0]
+    # print(music_blob)
     return Response("success", 200)
 
 
