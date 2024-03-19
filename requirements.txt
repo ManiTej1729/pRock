@@ -7,6 +7,15 @@ PyJWT==2.8.0
 PyJWT==2.8.0
 PyMySQL==1.1.0
 python_bcrypt==0.3.2
+bcrypt==3.2.0Flask==3.0.2
+numpy==1.26.4
+opencv_python==4.9.0.80
+Pillow==10.2.0
+psycopg2_binary==2.9.9
+PyJWT==2.8.0
+PyJWT==2.8.0
+PyMySQL==1.1.0
+python_bcrypt==0.3.2
 bcrypt==3.2.0
 Flask==3.0.2
 Pillow==9.0.1
@@ -17,4 +26,9 @@ opencv-python-headless==4.5.5.62
 mutagen==1.45.1
 pymysql==1.0.2
 psycopg2==2.9.1
+Flask==3.0.2
+Pillow==9.0.1
+numpy==1.26.4
+psycopg2==2.9.1
+
 
