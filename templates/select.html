@@ -131,19 +131,12 @@
     <hr>
     <div id="images">
       {% for image_base64 in nice_images %}
-      <!-- <marquee behavior="scroll" direction="right"> -->
       <img src="data:image/*;base64,{{ image_base64 }}" alt="Image", height="200px" width="auto" id="choose" onclick="selection(this.src)">
-      <!-- </marquee> -->
       {% endfor %}
     </div>
     <hr><hr>
     <div id="chosen" style="padding: 5px;">
     </div><hr>
-    <ul>
-      {% for img_search in searchList %}
-      <li>{{ img_search }}</li>
-      {% endfor %}
-    </ul>
     <h3>Add Background Music</h3>
     <div class="container">
         <input id = "searchbar" onkeyup = "search_songs()" type="text" name="search" placeholder="Search your background song">
@@ -156,8 +149,6 @@
             <li class="songs" onclick="handleMusic(this.innerHTML)">Happy Birthday to you Ji</li>
         </ul>
     </div>
-    
-    <!-- <script src="./script.js"></script>           -->
     <button onclick="confirmSelection()">Confirm selection</button>
     <footer class="footer">
       <h2>pRock</h2>
