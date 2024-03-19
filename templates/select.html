@@ -80,6 +80,52 @@
         margin-top: 20px;
         min-width: 100%;
     }
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 20px;
+    }
+    .songs {
+        font-size: 1.2em;
+        padding: 10px;
+        /* border-bottom: 1px solid #ccc; */
+        animation: fadeIn 0.5s ease-in-out;
+        cursor: pointer;
+    }
+    .songs:hover {
+      color: aqua;
+    }
+    .songs:active {
+      transform: translateY(-2px);
+      color: darkblue;
+    }
+    .songs:last-child {
+        border-bottom: none;
+    }
+    #searchbar {
+        margin: 10px;
+        padding: 10px;
+        border-radius: 5px;
+        width: 50%;
+        box-sizing: border-box;
+    }
+    #list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    @keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+ 
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
   </style>
 </head>
 <body>
@@ -95,15 +141,28 @@
     <div id="chosen" style="padding: 5px;">
     </div><hr>
     <h3>Add Background Music</h3>
-    <input type="radio" id="musicFile1" onchange="handleMusic(this.value)" name="bgm" value="Chaleya">
+    <!-- <input type="radio" id="musicFile1" onchange="handleMusic(this.value)" name="bgm" value="Chaleya">
     <label for="musicFile1">Chaleya</label><br>
     <input type="radio" id="musicFile2" onchange="handleMusic(this.value)" name="bgm" value="Heeriye">
     <label for="musicFile2">Heeriye</label><br>
     <input type="radio" id="musicFile3" onchange="handleMusic(this.value)" name="bgm" value="Happy Birthday To You Ji">
     <label for="musicFile3">Happy Birthday To You Ji</label><br>
     <input type="radio" id="musicFile4" onchange="handleMusic(this.value)" name="bgm" value="INDUSTRY-BABY">
-    <label for="musicFile4">Industry Baby</label><br><br><br>
-            
+    <label for="musicFile4">Industry Baby</label><br><br><br> -->
+    <body>
+        <div class="container">
+            <input id = "searchbar" onkeyup = "search_songs()" type="text" name="search" placeholder="Search your background song">
+     
+            <ul id='list'>
+                <li class="songs" onclick="handleMusic(this.innerHTML)">Chaleya</li>
+                <li class="songs" onclick="handleMusic(this.innerHTML)">INDUSTRY-BABY</li>
+                <li class="songs" onclick="handleMusic(this.innerHTML)">Heeriye</li>
+                <li class="songs" onclick="handleMusic(this.innerHTML)">Happy Birthday to you Ji</li>
+            </ul>
+        </div>
+     
+        <script src="./script.js"></script>
+    </body>          
     <button onclick="confirmSelection()">Confirm selection</button>
     <footer class="footer">
       <h2>pRock</h2>
@@ -166,7 +225,20 @@
           // .then(data => console.log(data))
           // window.location.href = '/video'
         }
-
+        function search_songs() {
+            let input = document.getElementById('searchbar').value
+            input = input.toLowerCase();
+            let x = document.getElementsByClassName('songs');
+ 
+            for (i = 0; i < x.length; i++) {
+                if (x[i].innerHTML.toLowerCase().includes(input)) {
+                    x[i].style.display = "list-item";
+                }
+                else {
+                  x[i].style.display = "none";                
+                }
+            }
+        }
     </script>
 </body>
 </html>
