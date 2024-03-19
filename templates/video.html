@@ -89,6 +89,13 @@
             <input type="range" class="control-button" id="volume-bar" min="0" max="1" step="0.1" value="1">
             <button class="control-button" id="speed-button">&#x1F504;</button>
             <button class="control-button" id="fullscreen-button">&#x26F6;</button>
+            <select id="resolution-selector" class="control-button">
+                <option value="144">144p</option>
+                <option value="360">360p</option>
+                <option value="480">480p</option>
+                <option value="720">720p</option>
+                <option value="1080">1080p</option>
+            </select>
             <div class="speed-options" id="speed-options">
                 <button class="speed-option" data-speed="0.5">0.5x</button>
                 <button class="speed-option" data-speed="1">1x</button>
@@ -108,6 +115,7 @@
         const speedButton = document.getElementById('speed-button');
         const speedOptions = document.getElementById('speed-options');
         const fullscreenButton = document.getElementById('fullscreen-button');
+        const resolutionSelector = document.getElementById('resolution-selector');
 
         playPauseButton.addEventListener('click', function() {
             if (video.paused) {
@@ -155,6 +163,18 @@
                 speedOptions.style.display = 'none';
             }
         });
+
+        resolutionSelector.addEventListener('change', function() {
+    const selectedResolution = this.value;
+    console.log('Selected resolution:', selectedResolution);
+    const sourceElement = video.querySelector('source');
+    console.log('Current video source:', sourceElement.src);
+    const currentSrc = sourceElement.src;
+    const newSrc = currentSrc.replace(/\d+p/, selectedResolution + 'p');
+    console.log('New video source:', newSrc);
+    sourceElement.src = newSrc;
+    video.load();
+});
 
         fullscreenButton.addEventListener('click', function() {
             if (video.requestFullscreen) {
