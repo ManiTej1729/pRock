@@ -225,7 +225,7 @@ def display():
     query = 'select username, email, password from users'
     cur.execute(query)
     list_of_users = cur.fetchall()
-    print(list_of_users)
+    # print(list_of_users)
     return jsonify(list_of_users)
 
 @app.route('/create', methods=['GET', 'POST'])
@@ -275,10 +275,11 @@ def show():
     img_b64 = request.form.getlist('images')
     bg_music = request.form.get('bgm')
     audio_flag = request.form.get('music_flag')
-    print(img_b64)
+    # print(img_b64)
     print("length:", len(img_b64))
     unique_uname = session['user_details']['username']
-    query = f'SELECT id FROM users WHERE username = {unique_uname}'
+    query = f'SELECT id FROM users WHERE username = "{unique_uname}"'
+    print(query)
     cur.execute(query)
     uId = cur.fetchone()
     uId = uId[0]
@@ -289,6 +290,17 @@ def show():
     for imgs in fake_img_names:
         actual_img_names.append(imgs[0])
     print(actual_img_names)
+    dictionary = {}
+    iterator = 0
+    query = f'SELECT bindata FROM uploaded_images WHERE user_id = {uId}'
+    cur.execute(query)
+    fake_blobs = cur.fetchall()
+    actual_blobs = []
+    for blob in fake_blobs:
+        actual_blobs.append(blob[0])
+    # for b64s in :
+    #     dictionary['b64s'] = actual_img_names[iterator]
+    #     iterator = iterator + 1
     query = 'SELECT bindata FROM audio_library WHERE audio_name = %s'
     cur.execute(query, (bg_music,))
     music_blob = cur.fetchone()
