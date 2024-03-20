@@ -45,8 +45,8 @@ def mydb():
     )
     return conn
 # mydb=getdb()
-print(mydb())
 con = mydb()
+print(con)
 cur = con.cursor()
 # cur.execute("CREATE DATABASE pRock")
 # cur.execute("use pRock")
