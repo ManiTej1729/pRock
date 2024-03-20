@@ -318,10 +318,10 @@ def logout():
     session.pop('jwt_token', None)
     session.pop('user_details', None)
     return redirect(url_for('index'))
-
+    
 if __name__ == "__main__":
     app.run(debug=True)
 
 con.commit()
-cur.close()
+# cur.close()
 con.close()
