@@ -46,7 +46,8 @@ def mydb():
     return conn
 # mydb=getdb()
 print(mydb())
-cur = mydb().cursor()
+con = mydb()
+cur = con.cursor()
 # cur.execute("CREATE DATABASE pRock")
 # cur.execute("use pRock")
 # if mydb.open:
@@ -137,7 +138,7 @@ def video():
                 query = 'INSERT INTO uploaded_images (user_id, image_name, fsize, bindata) VALUES (%s, %s, %s, %s)'
                 print("SQL Query:", query)  # Debugging print statement
                 cur.execute(query, (fidin, filename, filesize, fileblob))
-                mydb().commit()
+                con.commit()
     
     return redirect(url_for('newHome'))
 
@@ -180,7 +181,7 @@ def add(typer):
         session['user_details'] = {'username': name}
         cmd = "INSERT INTO users (username, email, password) VALUES (%s, %s, %s)"
         cur.execute(cmd, (name, email, password))
-        mydb().commit()
+        con.commit()
         return redirect(url_for('newHome'))
     elif request.method == 'POST' and typer == 'login':
         # name = request.form.get('name')
@@ -322,6 +323,6 @@ def logout():
 if __name__ == "__main__":
     app.run(debug=True)
 
-mydb().commit()
+con.commit()
 cur.close()
-mydb().close()
+con.close()
