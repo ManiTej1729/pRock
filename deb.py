@@ -15,21 +15,22 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify, s
 
 app = Flask(__name__)
 app.secret_key = "this_is_worlds_most_secured_secret_key"
-# mydb = pymysql.connect(
-#     host = "localhost",
-#     user = "root",
-#     password = "Vedp9565@",
-#     database = "media_database"
-# )
-mydb=psycopg2.connect("postgresql://ved:_fH3BfLkIHVWrNGQkG557Q@papamerepapa-9041.8nk.gcp-asia-southeast1.cockroachlabs.cloud:26257/pRock?sslmode=verify-full")
-cur = mydb.cursor()
+mydb = pymysql.connect(
+    host = "localhost",
+    user = "root",
+    password = "Vedp9565@",
+    database = "media_database"
+)
+# mydb=psycopg2.connect("postgresql://ved:_fH3BfLkIHVWrNGQkG557Q@papamerepapa-9041.8nk.gcp-asia-southeast1.cockroachlabs.cloud:26257/pRock?sslmode=verify-full")
+# cur = mydb.cursor()
+# cur.execute("CREATE DATABASE pRock")
 # cur.execute("use pRock")
-# if mydb.open:
-#     print("Connected")
-#     cur = mydb.cursor()
-#     cur.execute("use media_database")
-# else:
-#     print("Falied to connect")
+if mydb.open:
+    print("Connected")
+    cur = mydb.cursor()
+    cur.execute("use media_database")
+else:
+    print("Falied to connect")
 salt = bcrypt.gensalt()
 def hash_password(password):
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
@@ -88,41 +89,41 @@ def video():
     token = session.get('jwt_token')
     if not token:
         return redirect(url_for('index'))
-    # print("entered")
+    
     files = request.files.getlist('image')
-    # print("number: ", files)
     uname = session['user_details']['username']
-    # print(uname)
-    # query = 'SELECT id FROM users WHERE username = %s'
-    # cur.execute(query, uname)
-    query = 'SELECT id FROM users WHERE username = $1'
+    
+    print("Username:", uname)  # Debugging print statement
+    
+    # Prepare SQL query to get the user id
+    query = 'SELECT id FROM users WHERE username = %s'
+    print("SQL Query:", query)  # Debugging print statement
     cur.execute(query, (uname,))
-
     fId = cur.fetchone()
-    # print("fid: ", fId)
+    
     if fId:
         for img in files:
-            print(img)
             filename = img.filename
-            # with open(f"{filename}", 'rb') as img:
             fileblob = img.read()
             filesize = len(fileblob)
-            fidin = int(fId[0])
-            # print("file size: ", filesize)
-            print("Bin data: ", fileblob)
+            fidin = fId[0]
+            
             if filesize != 0:
-                query = f'INSERT INTO uploaded_images (user_id, image_name, fsize, bindata) VALUES ({fidin}, "{filename}", {filesize}, %s)'
-                cur.execute(query, (fileblob))
+                # Prepare SQL query to insert image data
+                query = 'INSERT INTO uploaded_images (user_id, image_name, fsize, bindata) VALUES (%s, %s, %s, %s)'
+                print("SQL Query:", query)  # Debugging print statement
+                cur.execute(query, (fidin, filename, filesize, fileblob))
                 mydb.commit()
-                print(fId, filename)
+    
     return redirect(url_for('newHome'))
+
 
 @app.route('/next/<typer>', methods=['POST', 'GET'])
 def add(typer):
     token = session.get('jwt_token')
     if token:
         return redirect(url_for('newHome'))
-    query = 'select username, email, password from users'
+    query = 'SELECT username, email, password FROM users'
     cur.execute(query)
     list_of_users = cur.fetchall()
     if request.method == 'POST' and typer == 'signin':
@@ -161,9 +162,8 @@ def add(typer):
         # name = request.form.get('name')
         email = request.form.get('email')
         password = request.form.get('password')
-        query = 'SELECT username FROM users WHERE email = $1'
+        query = 'SELECT username FROM users WHERE email = %s'
         cur.execute(query, (email,))
-
         name = cur.fetchone()
         if name == None:
             return render_template("login.html", err="User not found", new=typer)
@@ -232,29 +232,26 @@ def display():
 def crVid():
     img_blobs = []
     unique_uname = session['user_details']['username']
-    # print(unique_uname)
-    query = 'SELECT id FROM users WHERE username = $1'
-    cur.execute(query, (unique_uname,))
-    print(query)
-
-    uId = cur.fetchone()
-    uId = uId[0]
-    # print(uId)
-    # query = f'select bindata from uploaded_images where user_id = {uId}'
-    # cur.execute(query)
-    query = 'SELECT bindata FROM upload_images WHERE user_id = $1'
-    cur.execute(query, (uId,))
-
-    lists = cur.fetchall()
-    query = f'select image_name from uploaded_images where user_id = {uId}'
-    cur.execute(query)
-    query = 'SELECT image_name FROM upload_images WHERE user_id = $1'
-    cur.execute(query, (uId,))
-    names = cur.fetchall()
-    actual_names = []
-    for fileName in names:
-        actual_names.append(fileName[0])
     
+    query = 'SELECT id FROM users WHERE username = %s'
+    cur.execute(query, (unique_uname,))
+    uId = cur.fetchone()
+    uId = uId[0] if uId else None
+    
+    if uId:
+        # Prepare SQL query to fetch image data
+        query = f'SELECT bindata FROM uploaded_images WHERE user_id = {uId}'
+        cur.execute(query)
+        lists = cur.fetchall()
+
+        # Prepare SQL query to fetch image names
+        query = f'SELECT image_name FROM uploaded_images WHERE user_id = {uId}'
+        cur.execute(query)
+        names = cur.fetchall()
+        
+        actual_names = [fileName[0] for fileName in names]
+    else:
+        actual_names = []
     # print(lists)
     nice_images  =[]
     for items in lists:
@@ -284,8 +281,8 @@ def show():
     for blob in blobs:
         resized_nps.append(resize(blob))
     print(resized_nps)
-    query = f'select bindata from audio_library where audio_name = "{bg_music}"'
-    cur.execute(query)
+    query = 'SELECT bindata FROM audio_library WHERE audio_name = %s'
+    cur.execute(query, (bg_music,))
     music_blob = cur.fetchone()
     music_blob = music_blob[0]
     # print(music_blob)
