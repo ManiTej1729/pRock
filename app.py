@@ -39,7 +39,7 @@ def mydb():
     # Set up the connection string with the path to the certificate
     conn = psycopg2.connect(
         "host=papamerepapa-9041.8nk.gcp-asia-southeast1.cockroachlabs.cloud "
-        "port=26257 dbname=defaultdb user=ved "
+        "port=26257 dbname=pRock user=ved "
         "password=_fH3BfLkIHVWrNGQkG557Q sslmode=verify-full "
         f"sslrootcert={cert_path}"
     )
