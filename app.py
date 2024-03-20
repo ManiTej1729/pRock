@@ -150,7 +150,7 @@ def add(typer):
     query = 'SELECT username, email, password FROM users'
     cur.execute(query)
     list_of_users = cur.fetchall()
-    if  typer == 'signin':
+    if  request.method == 'POST' typer == 'signin':
         name = request.form.get('name')
         email = request.form.get('email')
         password = request.form.get('password')
