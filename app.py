@@ -150,7 +150,7 @@ def add(typer):
     query = 'SELECT username, email, password FROM users'
     cur.execute(query)
     list_of_users = cur.fetchall()
-    if request.method == 'POST' and typer == 'signin':
+    if  typer == 'signin':
         name = request.form.get('name')
         email = request.form.get('email')
         password = request.form.get('password')
@@ -182,7 +182,7 @@ def add(typer):
         cur.execute(cmd, (name, email, password))
         mydb().commit()
         return redirect(url_for('newHome'))
-    elif request.method == 'POST' and typer == 'login':
+    elif  typer == 'login':
         # name = request.form.get('name')
         email = request.form.get('email')
         password = request.form.get('password')
