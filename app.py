@@ -186,7 +186,7 @@ def add(typer):
         # name = request.form.get('name')
         email = request.form.get('email')
         password = request.form.get('password')
-        query = 'SELECT username FROM users WHERE email ="email"'
+        query = 'SELECT username FROM users WHERE email =%s'
         cur.execute(query)
         name = cur.fetchone()
         if name == None:
