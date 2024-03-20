@@ -13,7 +13,7 @@ import pymysql.cursors
 import jwt
 from PIL import Image
 from flask import Flask, render_template, request, redirect, url_for, jsonify, session, Response
-
+import os
 app = Flask(__name__)
 app.secret_key = "this_is_worlds_most_secured_secret_key"
 # mydb = pymysql.connect(
@@ -22,8 +22,30 @@ app.secret_key = "this_is_worlds_most_secured_secret_key"
 #     password = "Vedp9565@",
 #     database = "media_database"
 # )
-mydb=psycopg2.connect("postgresql://ved:_fH3BfLkIHVWrNGQkG557Q@papamerepapa-9041.8nk.gcp-asia-southeast1.cockroachlabs.cloud:26257/pRock?sslmode=verify-full")
-cur = mydb.cursor()
+# mydb=psycopg2.connect("postgresql://ved:_fH3BfLkIHVWrNGQkG557Q@papamerepapa-9041.8nk.gcp-asia-southeast1.cockroachlabs.cloud:26257/pRock?sslmode=verify-full")
+# cur = mydb.cursor()
+def mydb():
+    # Decode the base64 certificate
+    cert_decoded = base64.b64decode(os.environ['ROOT_CERT_BASE64'])
+    
+    # Define the path to save the certificate
+    cert_path = '/opt/render/.postgresql/root.crt'
+    os.makedirs(os.path.dirname(cert_path), exist_ok=True)
+    
+    # Write the certificate to the file
+    with open(cert_path, 'wb') as cert_file:
+        cert_file.write(cert_decoded)
+    
+    # Set up the connection string with the path to the certificate
+    conn = psycopg2.connect(
+        "host=papamerepapa-9041.8nk.gcp-asia-southeast1.cockroachlabs.cloud "
+        "port=26257 dbname=defaultdb user=ved "
+        "password=_fH3BfLkIHVWrNGQkG557Q sslmode=verify-full "
+        f"sslrootcert={cert_path}"
+    )
+    return conn
+# mydb=getdb()
+cur = mydb().cursor()
 # cur.execute("CREATE DATABASE pRock")
 # cur.execute("use pRock")
 # if mydb.open:
@@ -157,7 +179,7 @@ def add(typer):
         session['user_details'] = {'username': name}
         cmd = "INSERT INTO users (username, email, password) VALUES (%s, %s, %s)"
         cur.execute(cmd, (name, email, password))
-        mydb.commit()
+        mydb().commit()
         return redirect(url_for('newHome'))
     elif request.method == 'POST' and typer == 'login':
         # name = request.form.get('name')
@@ -299,6 +321,6 @@ def logout():
 if __name__ == "__main__":
     app.run(debug=True)
 
-mydb.commit()
+mydb().commit()
 cur.close()
-mydb.close()
+mydb().close()
