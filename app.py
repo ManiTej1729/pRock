@@ -182,7 +182,7 @@ def add(typer):
         cur.execute(cmd, (name, email, password))
         mydb().commit()
         return redirect(url_for('newHome'))
-    elif typer == 'login':
+    elif request.method = 'POST' and typer == 'login':
         # name = request.form.get('name')
         email = request.form.get('email')
         password = request.form.get('password')
