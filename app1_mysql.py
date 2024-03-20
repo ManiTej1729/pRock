@@ -33,10 +33,10 @@ def get_song_metadata(audio_path):
 
 def populate_audio_library():
     audio_files = [
-        ("Chaleya_320(PagalWorld.com.cm).mp3", "Chaleya"),
-        ("Heeriye_320(PagalWorld.com.cm).mp3", "Heeriye"),
-        ("Happy Birthday To You Ji(PagalWorld.com.cm).mp3", "Happy Birthday To You Ji"),
-        ("INDUSTRY-BABY---Lil-Nas-X-N-Jack-Harlow(PagalWorlld.Com).mp3", "Industry Baby"),
+        ("Chaleya.mp3", "Chaleya"),
+        ("Heeriye.mp3", "Heeriye"),
+        ("Happy Birthday To You Ji.mp3", "Happy Birthday To You Ji"),
+        ("INDUSTRY-BABY.mp3", "INDUSTRY-BABY"),
     ]
     for audio_file, audio_name in audio_files:
         size, duration = get_song_metadata(audio_file)
